@@ -17,22 +17,36 @@ var setIntervalMixin = {
 
 var Counter = React.createClass({
     mixins: [setIntervalMixin],
-    getInitialState: function() { return {value: 0}; },
+    getInitialState: function() { return {value: 0 }; },
 
     tick: function () {
         this.setState({value: this.state.value + 1});
     },
 
-    statics: {
-        label: "Counter"
+    resetCounter: function () {
+        console.log("Resetting counter to 0");
+        sessionStorage.setItem('counterValue', 0);
+        this.setState({value: 0});
     },
 
-    componentDidMount: function () { this.setInterval(this.tick, 1000); },
+    statics: { label: "Counter" },
+
+    componentDidMount: function () {
+        var knownValue = sessionStorage.getItem('counterValue');
+        this.setInterval(this.tick, 1000);
+        if (knownValue) {
+            console.log ("Loading last value ", knownValue);
+            this.setState({value: Number(knownValue)});
+        }
+    },
+    componentWillUnmount: function () { sessionStorage.setItem('counterValue', this.state.value); },
 
     render: function() {
         return React.DOM.div(
-            {children: React.DOM.h1(
-                {children: "Hello World, " + this.state.value })});
+            {children: [
+                React.DOM.h1({}, "Hello World, " + this.state.value),
+                React.DOM.button({onClick: this.resetCounter}, "reset")
+            ]});
     }
 });
 

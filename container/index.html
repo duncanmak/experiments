@@ -5,14 +5,37 @@
     <link type="text/css" rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="//fb.me/react-0.10.0.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <link type="text/css" href="app.css" rel="stylesheet" />
   </head>
   <body>
-    <div>
-      <div id="toggle"></div>
-      <div id="content"></div>
-      <script type="text/javascript" src="../hello/app.js"></script>
-      <script type="text/javascript" src="../counter/app.js"></script>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> -->
+          <!--   <span class="sr-only">Toggle navigation</span> -->
+          <!--   <span class="icon-bar"></span> -->
+          <!--   <span class="icon-bar"></span> -->
+          <!--   <span class="icon-bar"></span> -->
+          <!-- </button> -->
+          <a class="navbar-brand" href="#">Dashboard</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
     </div>
+    <div class="container">
+      <div class="app-body">
+        <div id="toggle"></div>
+        <div id="content"></div>
+      </div>
+    </div>
+    <script type="text/javascript" src="../hello/app.js"></script>
+    <script type="text/javascript" src="../counter/app.js"></script>
     <script type="text/javascript" src="app.js"></script>
   </body>
 </html>
