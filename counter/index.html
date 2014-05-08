@@ -7,6 +7,10 @@
   <body>
     <div id="example"></div>
     <script type="text/javascript" src="app.js"></script>
-    <script type="text/javascript" src="runner.js"></script>
+    <script type="text/javascript">
+      React.renderComponent(
+      Counter({}),
+      document.getElementById('example'));
+    </script>
   </body>
 </html>
