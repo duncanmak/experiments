@@ -7,8 +7,6 @@ var Hello = React.createClass({
     },
 
     render: function() {
-        return React.DOM.div(
-            {children: React.DOM.h1(
-                {children: "Bonjour"})});
+        return React.DOM.div({}, React.DOM.h1({}, "Bonjour"));
     }
 });

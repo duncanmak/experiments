@@ -42,11 +42,10 @@ var Counter = React.createClass({
     componentWillUnmount: function () { sessionStorage.setItem('counterValue', this.state.value); },
 
     render: function() {
-        return React.DOM.div(
-            {children: [
-                React.DOM.h1({}, "Hello World, " + this.state.value),
-                React.DOM.button({onClick: this.resetCounter}, "reset")
-            ]});
+        return React.DOM.div({},[
+            React.DOM.h1({}, "Hello World, " + this.state.value),
+            React.DOM.button({onClick: this.resetCounter}, "reset")
+        ]);
     }
 });
 
