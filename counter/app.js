@@ -33,13 +33,18 @@ var Counter = React.createClass({
 
     componentDidMount: function () {
         var knownValue = sessionStorage.getItem('counterValue');
-        this.setInterval(this.tick, 1000);
+
         if (knownValue) {
             console.log ("Loading last value ", knownValue);
             this.setState({value: Number(knownValue)});
         }
+
+        this.setInterval(this.tick, 1000);
     },
-    componentWillUnmount: function () { sessionStorage.setItem('counterValue', this.state.value); },
+
+    componentWillUnmount: function () {
+        sessionStorage.setItem('counterValue', this.state.value);
+    },
 
     render: function() {
         return React.DOM.div({},[

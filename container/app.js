@@ -1,62 +1,59 @@
 /*jslint indent: 4, sloppy: true */
-/*global React, Hello, Counter, _ */
+/*global _, Counter, Hello, React, Router */
 
 var contentNode = document.getElementById('content'),
 
-    storageMixin = {
-        componentWillMount: function() {
-            this.storage = {};
-        },
-        put: function (k, v) {
-            this.storage[k] = v;
-        },
-
-        get: function(k) { return k && this.storage[k]; }
-    },
-
-    Toggle = React.createClass({
-        mixins: [storageMixin],
-
-        getInitialState: function() {
+    TopBar = React.createClass({
+        getInitialState: function () {
             return { current: false };
         },
 
-        loadApp: function(app) {
-            var self = this;
-            return function () {
-                React.unmountComponentAtNode(contentNode);
-                var instance = self.get(app.label);
-
-                if (_.isUndefined(instance)) {
-                    console.log("Loading " + app.label);
-                    instance = app({});
-                }
-                React.renderComponent(
-                    instance,
-                    contentNode
-                );
-
-                self.put(app.label, instance);
-            };
+        componentDidMount: function() {
+            var router = this.prepareRouter();
+            router.init();
         },
+
+        isActiveApp: function(app) {
+            return (this.state.current === app) ? { className: "active" }: {};
+        },
+
+        handleClick: function(app) { this.setState({current: app}); },
 
         render: function () {
             var self = this;
-            return React.DOM.div({
-                className: "btn-group",
-                children: this.props.apps.map(function (app) {
-                    return React.DOM.button({
-                        className: "btn btn-default",
-                        children: app.label,
-                        type: "button",
-                        onClick: self.loadApp(app)
-                    });
-                })
-            });
+            return React.DOM.div(
+                { className: "navbar navbar-inverse navbar-fixed-top" },
+                React.DOM.div( {className: "container"},
+                               React.DOM.div(
+                                   {className: "navbar-header"},
+                                   React.DOM.a({ className: "navbar-brand", href: "#" }, "Dashboard")),
+                               React.DOM.div(
+                                   { className: "collapse navbar-collapse" },
+                                   React.DOM.ul( { className: "nav navbar-nav" },
+                                                 this.props.apps.map(function (app) {
+                                                     return React.DOM.li(
+                                                         self.isActiveApp(app),
+                                                         React.DOM.a( { href: "#" + app.label, onClick: self.handleClick.bind(self, app) }, app.label));
+                                                 })))));},
+        //
+        // internal
+        //
+        mountApplication: function(app) {
+            React.unmountComponentAtNode(contentNode);
+            React.renderComponent(app({}), contentNode);
+        },
+
+        prepareRouter: function() {
+            var self = this;
+            var handlers = this.props.apps.map(function (app) { return self.mountApplication.bind(self, app); });
+            return Router(_.object(_.pluck(apps, "label"), handlers));
         }
     });
 
+
+var apps = [Hello, Counter];
+
 React.renderComponent(
-    Toggle({apps: [Hello, Counter]}),
-    document.getElementById('toggle')
+    TopBar({apps: apps}),
+    document.getElementById('app-top-bar')
 );
