@@ -1,5 +1,5 @@
-/*jslint indent: 4, sloppy: true */
-/*global _, Counter, Hello, React, Router */
+/*jslint indent: 4, nomen: true, sloppy: true */
+/*global _, document, Counter, Hello, React, Router */
 
 var contentNode = document.getElementById('content'),
 
@@ -8,45 +8,51 @@ var contentNode = document.getElementById('content'),
             return { current: false };
         },
 
-        componentDidMount: function() {
+        componentDidMount: function () {
             var router = this.prepareRouter();
             router.init();
         },
 
-        isActiveApp: function(app) {
-            return (this.state.current === app) ? { className: "active" }: {};
+        isActiveApp: function (app) {
+            return (this.state.current === app) ? { className: "active" } : {};
         },
 
-        handleClick: function(app) { this.setState({current: app}); },
+        handleClick: function (app) { this.setState({ current: app }); },
 
         render: function () {
             var self = this;
             return React.DOM.div(
                 { className: "navbar navbar-inverse navbar-fixed-top" },
-                React.DOM.div( {className: "container"},
-                               React.DOM.div(
-                                   {className: "navbar-header"},
-                                   React.DOM.a({ className: "navbar-brand", href: "#" }, "Dashboard")),
-                               React.DOM.div(
-                                   { className: "collapse navbar-collapse" },
-                                   React.DOM.ul( { className: "nav navbar-nav" },
-                                                 this.props.apps.map(function (app) {
-                                                     return React.DOM.li(
-                                                         self.isActiveApp(app),
-                                                         React.DOM.a( { href: "#" + app.label, onClick: self.handleClick.bind(self, app) }, app.label));
-                                                 })))));},
+                React.DOM.div(
+                    {className: "container"},
+                    React.DOM.div(
+                        { className: "navbar-header" },
+                        React.DOM.a({ className: "navbar-brand", href: "#" }, "Dashboard")
+                    ),
+                    React.DOM.div(
+                        { className: "collapse navbar-collapse" },
+                        React.DOM.ul(
+                            { className: "nav navbar-nav" },
+                            this.props.apps.map(function (app) {
+                                return React.DOM.li(self.isActiveApp(app), React.DOM.a({ href: "#" + app.label, onClick: self.handleClick.bind(self, app) }, app.label));
+                            })
+                        )
+                    )
+                )
+            );
+        },
         //
         // internal
         //
-        mountApplication: function(app) {
+        mountApplication: function (app) {
             React.unmountComponentAtNode(contentNode);
             React.renderComponent(app({}), contentNode);
         },
 
-        prepareRouter: function() {
-            var self = this;
-            var handlers = this.props.apps.map(function (app) { return self.mountApplication.bind(self, app); });
-            return Router(_.object(_.pluck(apps, "label"), handlers));
+        prepareRouter: function () {
+            var self     = this,
+                handlers = this.props.apps.map(function (app) { return self.mountApplication.bind(self, app); });
+            return Router(_.object(_.pluck(this.prop.apps, "label"), handlers));
         }
     });
 
