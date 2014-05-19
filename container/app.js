@@ -34,7 +34,11 @@ var contentNode = document.getElementById('content'),
                         React.DOM.ul(
                             { className: "nav navbar-nav" },
                             this.props.apps.map(function (app) {
-                                return React.DOM.li(self.isActiveApp(app), React.DOM.a({ href: "#" + app.label, onClick: self.handleClick.bind(self, app) }, app.label));
+                                return React.DOM.li(
+                                    self.isActiveApp(app),
+                                    React.DOM.a(
+                                        { href: "#" + app.label, onClick: self.handleClick.bind(self, app) },
+                                        app.label));
                             })
                         )
                     )
@@ -52,7 +56,7 @@ var contentNode = document.getElementById('content'),
         prepareRouter: function () {
             var self     = this,
                 handlers = this.props.apps.map(function (app) { return self.mountApplication.bind(self, app); });
-            return Router(_.object(_.pluck(this.prop.apps, "label"), handlers));
+            return Router(_.object(_.pluck(this.props.apps, "label"), handlers));
         }
     });
 
