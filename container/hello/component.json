@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "jashkenas/underscore": "*"
+    },
+    "scripts": ["app.js"]
+}

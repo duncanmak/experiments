@@ -15,7 +15,8 @@ var setIntervalMixin = {
     }
 };
 
-var Counter = React.createClass({
+
+module.exports = React.createClass({
     mixins: [setIntervalMixin],
     getInitialState: function() { return {value: 0 }; },
 

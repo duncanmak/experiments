@@ -60,7 +60,8 @@ var contentNode = document.getElementById('content'),
         }
     });
 
-
+var Hello = require("Hello");
+var Counter = require("Counter");
 var apps = [Hello, Counter];
 
 React.renderComponent(

@@ -1,0 +1,7 @@
+{
+    "name": "component-experiment",
+    "locals": ["counter", "hello"],
+    "paths" : ["components", "."],
+    "scripts": ["app.js"],
+    "styles": ["app.css"]
+}
