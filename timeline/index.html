@@ -1,19 +1,22 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/underscore/underscore.js"></script>
-    <script src="bower_components/react/react-with-addons.js"></script>
-    <script src="bower_components/d3/d3.js"></script>
-</head>
-<body>
+  <head>
+    <title>"Timeline"</title>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
+    <script type="text/javascript" src="bower_components/react/react-with-addons.js"></script>
+    <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+    <script type="text/javascript" src="bower_components/moment/moment.js"></script>
+  </head>
+  <body>
 
     <div id="table"></div>
 
-    <script src="app.js"></script>
-    <script>
-        React.renderComponent(
-            Timeline({ url: "bot-status.json", selection: function(k) { return k.indexOf("jerry-10") < 0; } }), 
-            document.getElementById('table'));
+    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript">
+      React.renderComponent(
+      Timeline({ url: "bot-status.json", selection: "jerry-10" }),
+      document.getElementById('table'));
     </script>
-</body>
+  </body>
 </html>
