@@ -2,28 +2,110 @@
 
 var DOM = React.DOM;
 
+var Bar = React.createClass({
+
+    getDefaultProps: function() { return { isVisible: _.constant(1) }; },
+
+    fillColor: function () {
+        var state = this.props.entry.state;
+
+        if (state === "Issues") return "orange";
+        if (state === "Failed") return "red";
+        return "green";
+    },
+
+    isVisible: function () { return this.props.isVisible(this.props.entry); },
+
+    onMouseOver: function(evt) { this.props.displayEntry(this.props.entry); },
+
+    render: function() {
+        var a = moment(this.props.entry.date);
+        var b = moment(this.props.entry.date).add(this.props.entry.duration, 'seconds');
+        var x = this.props.xScale(a.toDate());
+
+        return DOM.rect({
+            x:           x,
+            y:           this.props.yScale(this.props.host),
+            width:       this.props.xScale(b.toDate()) - x,
+            height:      this.props.barHeight,
+            fill:        this.fillColor(),
+            opacity:     this.isVisible(),
+            onMouseOver: this.onMouseOver
+        });
+    }
+});
+
+var Lane = React.createClass({
+
+    getInitialState: function() { return { bgOpacity: 0 }; },
+
+    setOpacity: function(opacity, evt) { this.setState({ bgOpacity: opacity }); },
+
+    renderEntry: function(entry, key) {
+        return Bar({
+            key: key,
+            entry: entry,
+            host:         this.props.host,
+            xScale:       this.props.xScale, yScale: this.props.yScale,
+            svgHeight:    this.props.svgHeight, svgWidth: this.props.svgWidth - this.props.rightPadding, barHeight: this.props.barHeight,
+            displayEntry: this.props.displayEntry
+        });
+    },
+
+    textLabel: function() {
+        return DOM.text({
+            x: this.props.svgWidth - this.props.rightPadding + 30,
+            y: this.props.yScale(this.props.host) + (this.props.barHeight - 6),
+            fontSize: "10px",
+            fontFamily: "sans-serif"
+        }, this.props.host);
+    },
+
+    boundingBox: function() {
+        var w = this.props.svgWidth;
+        var h = this.props.barHeight;
+        var x = 0;
+        var y = this.props.yScale(this.props.host);
+
+        return DOM.rect({ x: x, y: y, width: w, height: h, fill: "gray", fillOpacity: this.state.bgOpacity });
+    },
+
+    separator: function() {
+        var w = this.props.svgWidth;
+        var y = this.props.yScale(this.props.host) + this.props.barHeight;
+
+        return DOM.line({ x1: 0, y1: y, x2: w, y2: y, stroke: 'gray', strokeWidth: 0.05 });
+    },
+
+
+    render: function() {
+        return DOM.g(
+            { onMouseEnter: this.setOpacity.bind(this, 0.1), onMouseLeave: this.setOpacity.bind(this, 0) },
+            this.textLabel(),
+            this.boundingBox(),
+            this.separator(),
+            this.props.entries.map(this.renderEntry)
+        );
+    }
+});
+
 var Timeline = React.createClass({
 
-    getInitialState: function () {
-        return { data: {} };
-    },
+    getInitialState: function() { return { data: {} }; },
 
-    getDefaultProps: function() {
-        return { selection: [] };
-    },
+    getDefaultProps: function() { return { exclude: [], keep: [] }; },
 
-    hostNames: function(hosts) {
-        return _.keys(hosts);
-    },
+    hostNames: function(hosts) { return _.keys(hosts); },
 
     buildTimes: function(hosts) {
         var timesForHost = function (host) {
             return host.map(function (i) {
-                return { date: moment(i.date), duration: i.duration };
+                return [moment(i.date), moment(i.date).add(i.duration)];
             });
         };
 
-        return _.flatten(_.values(hosts).map(timesForHost));
+        var times = _.chain(hosts).values().map(timesForHost).flatten().value();
+        return [moment.min(times), moment.max(times)];
     },
 
     componentDidMount: function() {
@@ -33,67 +115,79 @@ var Timeline = React.createClass({
     },
 
     visibleHosts: function(data) {
-        return _.omit(data, function (v, k) {
-            if (_.isEmpty(this.props.selection))
-                return _.any([k, v], _.isEmpty);
-            else
-                return k.indexOf(this.props.selection) < 0;
-        }.bind(this));
+        var keep    = this.props.keep;
+        var exclude = this.props.exclude;
+        var isAncient = function (entry) { return moment(entry.date).year() < 2014; };
+
+        var hosts = _.chain(data)
+                .omit(function (v, k) { return _.any([k, v], _.isEmpty); })
+                .omit(function (v, k) { return _.any(v, isAncient); } )
+                .omit(function (v, k) { return k.indexOf('QA') >= 0; } )
+                .omit(function (v, k) { return _.contains(exclude, k); } )
+                .omit(function (v, k) { return _.any(keep, function(i) { return k.indexOf(i) < 0; }); })
+                .value();
+
+        console.log(hosts);
+        return hosts;
     },
 
-    renderHostsAsList: function(hosts) {
-        return this.hostNames(hosts).map(function (k, idx) {
-            return DOM.li({key: idx}, k + " " + this.state.data[k].length);
-        }.bind(this));
-    },
-
-    renderAsList: function (hosts) {
-        return DOM.ul({}, this.renderHostsAsList(hosts));
-    },
-
-    renderHostsAsSVG: function(hosts, svgHeight, svgWidth, barHeight) {
-        var data       = this.state.data;
-        if (_.isEmpty(data))
+    renderHosts: function(hosts, svgHeight, svgWidth, barHeight) {
+        if (_.isEmpty(hosts))
             return undefined;
 
-        var hostNames  = this.hostNames(hosts);
-        var buildTimes = this.buildTimes(hosts);
-        var start      = _.last(buildTimes).date;
-        var end        = _.head(buildTimes).date;
-        var xScale     = d3.scale.ordinal().domain(hostNames).rangeBands([0, svgHeight]);
-        var yScale     = d3.time.scale().domain([start.toDate(), end.toDate()]).range([0, svgWidth]);
+        var buildTimes      = this.buildTimes(hosts);
+        var hostNames       = this.hostNames(hosts);
+        var setCurrentEntry = this.setCurrentEntry;
+        var start           = _.head(buildTimes);
+        var end             = _.last(buildTimes);
 
-        return hostNames.map(function (host) {
-            return data[host].map(function (entry) {
-                var a = moment(entry.date);
-                var b = moment(entry.date).add(entry.duration, 'seconds');
+        var rightPadding    = 120;
+        var xScale          = d3.time.scale().domain([start.toDate(), end.toDate()]).rangeRound([0, svgWidth - rightPadding]);
+        var yScale          = d3.scale.ordinal().domain(hostNames).rangeBands([0, svgHeight]);
 
-                var x      = xScale(host);
-                var y      = yScale(a.toDate());
-                var width  = yScale(b.toDate()) - yScale(a.toDate());
-                var height = barHeight;
-
-                console.log({x: x, y: y, width: width, height: height});
-                return DOM.rect({width: width, height: height, x: x, y: y});
-
+        return hostNames.map(function (host, key) {
+            return Lane({
+                key: key,
+                host: host,
+                entries: hosts[host],
+                xScale: xScale, yScale: yScale,
+                svgHeight: svgHeight, svgWidth: svgWidth,
+                barHeight: barHeight,
+                rightPadding: rightPadding,
+                displayEntry: setCurrentEntry
             });
         });
     },
 
-    renderAsSVG: function (hosts) {
-        var svgHeight = 1000;
-        var svgWidth  = 1000;
-        var barHeight = 20;
-        return DOM.svg(
-            { height: svgHeight, width: svgWidth },
-            this.renderHostsAsSVG(hosts, svgHeight, svgWidth, barHeight));
+    onMouseLeave: function(evt) { this.setState({ current: undefined }); },
+
+    setCurrentEntry: function(entry) { this.setState({current: entry}); },
+
+    renderCurrent: function() {
+        if (!_.isUndefined(this.state.current))
+            return DOM.div(
+                {},
+                DOM.p({}, "Started: " + moment(this.state.current.date).format('MMM D, YYYY [at] hh:mm:ss a')),
+                DOM.p({}, "Duration: " + moment.duration(this.state.current.duration, 'seconds').humanize()),
+                DOM.p({}, this.state.current.lane),
+                DOM.code({}, this.state.current.revision)
+            );
+
+        return undefined;
     },
 
-    render: function() {
-        var hosts = this.state.data;
-        return this.renderAsSVG(hosts);
+    render: function () {
+        var hosts     = this.state.data;
+        var svgHeight = this.props.height;
+        var svgWidth  = this.props.width;
+        var barHeight = Math.min(this.props.minHeight, (svgHeight - 200) / this.hostNames(hosts).length);
+        return DOM.div(
+            {},
+            DOM.svg(
+                { height: svgHeight, width: svgWidth, onMouseLeave: this.onMouseLeave },
+                this.renderHosts(hosts, svgHeight, svgWidth, barHeight)
+            ),
+            DOM.p({}, this.renderCurrent())
+        );
     }
 });
-
-
-

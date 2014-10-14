@@ -15,7 +15,7 @@
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript">
       React.renderComponent(
-      Timeline({ url: "bot-status.json", selection: "jerry-10" }),
+      Timeline({ minHeight: 40, height: 1000, width: 2000, url: "bot-status.json", keep: [], exclude: ['felix-1-lion', 'felix-2-lion', 'Windows-VS-6'] }),
       document.getElementById('table'));
     </script>
   </body>
