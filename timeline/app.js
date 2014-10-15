@@ -3,6 +3,7 @@
 var DOM = React.DOM;
 
 var Bar = React.createClass({
+    displayName: 'Bar',
 
     getDefaultProps: function() { return { isVisible: _.constant(1) }; },
 
@@ -47,6 +48,7 @@ var Bar = React.createClass({
 });
 
 var Lane = React.createClass({
+    displayName: 'Lane',
 
     getInitialState: function() { return { bgOpacity: 0 }; },
 
@@ -101,6 +103,7 @@ var Lane = React.createClass({
 });
 
 var Timeline = React.createClass({
+    displayName: 'Timeline',
 
     getInitialState: function() { return { data: {} }; },
 
