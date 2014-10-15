@@ -18,20 +18,31 @@ var Bar = React.createClass({
 
     onMouseOver: function(evt) { this.props.displayEntry(this.props.entry); },
 
+    shouldComponentUpdate: function (nextProps, nextState) { return false; },
+
     render: function() {
         var a = moment(this.props.entry.date);
         var b = moment(this.props.entry.date).add(this.props.entry.duration, 'seconds');
         var x = this.props.xScale(a.toDate());
+        var y = this.props.yScale(this.props.host);
+        var w = this.props.xScale(b.toDate()) - x;
+        var h = this.props.barHeight;
 
-        return DOM.rect({
+        var left  = DOM.line({ key: 1, x1: x,     y1: y, x2: x,     y2: y + h, stroke: 'black', strokeWidth: 0.2 });
+        var right = DOM.line({ key: 2, x1: x + w, y1: y, x2: x + w, y2: y + h, stroke: 'black', strokeWidth: 0.2 });
+
+        var rect = DOM.rect({
+            key:         3,
             x:           x,
-            y:           this.props.yScale(this.props.host),
-            width:       this.props.xScale(b.toDate()) - x,
-            height:      this.props.barHeight,
+            y:           y,
+            width:       w,
+            height:      h,
             fill:        this.fillColor(),
             opacity:     this.isVisible(),
             onMouseOver: this.onMouseOver
         });
+
+        return DOM.g({}, (w > 3) ? [left, rect, right] : rect);
     }
 });
 
@@ -126,8 +137,6 @@ var Timeline = React.createClass({
                 .omit(function (v, k) { return _.contains(exclude, k); } )
                 .omit(function (v, k) { return _.any(keep, function(i) { return k.indexOf(i) < 0; }); })
                 .value();
-
-        console.log(hosts);
         return hosts;
     },
 
