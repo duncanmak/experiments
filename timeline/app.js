@@ -26,7 +26,7 @@ var Bar = React.createClass({
         var b = moment(this.props.entry.date).add(this.props.entry.duration, 'seconds');
         var x = this.props.xScale(a.toDate());
         var y = this.props.yScale(this.props.host);
-        var w = this.props.xScale(b.toDate()) - x;
+        var w = Math.max(0.5, this.props.xScale(b.toDate()) - x);
         var h = this.props.barHeight;
 
         var left  = DOM.line({ key: 1, x1: x,     y1: y, x2: x,     y2: y + h, stroke: 'black', strokeWidth: 0.2 });
