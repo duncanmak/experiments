@@ -67,7 +67,7 @@ var Lane = React.createClass({
     },
 
     renderEntry: function(entry, key) {
-        var a = moment(entry.date);
+        var a = entry.moment;
         var b = a.clone().add(entry.duration, 'seconds');
         var x = this.props.xScale(a.toDate());
         var y = this.props.yScale(this.props.host);
@@ -176,7 +176,7 @@ var Timeline = React.createClass({
     buildTimes: function(hosts) {
         var timesForHost = function (host) {
             return host.map(function (i) {
-                return [moment(i.date), moment(i.date).add(i.duration)];
+                return [i.moment, i.moment.clone().add(i.duration)];
             });
         };
 
@@ -186,23 +186,24 @@ var Timeline = React.createClass({
 
     componentDidMount: function() {
         $.get(this.props.url, function (result) {
-            this.setState({ data: this.visibleHosts(result.hostHistory) });
+            var data = this.visibleHosts(result.hostHistory);
+            this.setState({ data: data });
         }.bind(this));
     },
 
     visibleHosts: function(data) {
         var keep    = this.props.keep;
         var exclude = this.props.exclude;
-        var isAncient = function (entry) { return moment(entry.date).year() < 2014; };
+        var isAncient = function (entry) { return entry.moment.year() < 2014; };
 
-        var hosts = _.chain(data)
-                .omit(function (v, k) { return _.any([k, v], _.isEmpty); })
-                .omit(function (v, k) { return _.any(v, isAncient); } )
-                .omit(function (v, k) { return k.indexOf('QA') >= 0; } )
-                .omit(function (v, k) { return _.contains(exclude, k); } )
-                .omit(function (v, k) { return _.any(keep, function(i) { return k.indexOf(i) < 0; }); })
-                .value();
-        return hosts;
+        return _.chain(data)
+            .mapValues(function (i)  { return _.map(i, function(entry) { return _.merge(entry, { moment: moment(entry.date) }); }); })
+            .omit(function (v, k) { return _.any([k, v], _.isEmpty); })
+            .omit(function (v, k) { return _.any(v, isAncient); } )
+            .omit(function (v, k) { return k.indexOf('QA') >= 0; } )
+            .omit(function (v, k) { return _.contains(exclude, k); } )
+            .omit(function (v, k) { return _.any(keep, function(i) { return k.indexOf(i) < 0; }); })
+            .value();
     },
 
     isVisible: function (item) {
@@ -252,7 +253,7 @@ var Timeline = React.createClass({
         if (!_.isUndefined(this.state.current))
             return DOM.div(
                 {},
-                DOM.p({}, "Started: " + moment(this.state.current.date).format('MMM D, YYYY [at] hh:mm:ss a')),
+                DOM.p({}, "Started: " + this.state.current.moment.format('MMM D, YYYY [at] hh:mm:ss a')),
                 DOM.p({}, "Duration: " + moment.duration(this.state.current.duration, 'seconds').humanize()),
                 DOM.p({}, this.state.current.lane),
                 DOM.code({}, this.state.current.revision)
