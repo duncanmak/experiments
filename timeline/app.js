@@ -25,15 +25,15 @@ var Bar = React.createClass({
         }
     },
 
-    shouldComponentUpdate: function (nextProps, nextState) { return false; },
+    shouldComponentUpdate: function (nextProps, nextState) {
+        return this.props.entry.revision != nextProps.entry.revision;
+    },
 
     render: function() {
-        var a = moment(this.props.entry.date);
-        var b = moment(this.props.entry.date).add(this.props.entry.duration, 'seconds');
-        var x = this.props.xScale(a.toDate());
-        var y = this.props.yScale(this.props.host);
-        var w = Math.max(0.5, this.props.xScale(b.toDate()) - x);
-        var h = this.props.barHeight;
+        var x = this.props.x;
+        var y = this.props.y;
+        var w = this.props.width;
+        var h = this.props.height;
         var c = this.fillColor();
         var o = this.isVisible();
 
@@ -62,13 +62,24 @@ var Lane = React.createClass({
 
     setOpacity: function(opacity, evt) { this.setState({ bgOpacity: opacity }); },
 
+    shouldComponentUpdate: function (nextProps, nextState) {
+        return this.state.bgOpacity != nextState.bgOpacity;
+    },
+
     renderEntry: function(entry, key) {
+        var a = moment(entry.date);
+        var b = a.clone().add(entry.duration, 'seconds');
+        var x = this.props.xScale(a.toDate());
+        var y = this.props.yScale(this.props.host);
+
         return Bar({
             key:   key,
             entry: entry,
+            x: x,
+            y: y,
+            width:        Math.max(0.5, this.props.xScale(b.toDate()) - x),
+            height:       this.props.barHeight,
             host:         this.props.host,
-            xScale:       this.props.xScale, yScale: this.props.yScale,
-            svgHeight:    this.props.svgHeight, svgWidth: this.props.svgWidth - this.props.rightPadding, barHeight: this.props.barHeight,
             displayEntry: this.props.displayEntry,
             isVisible:    this.props.isVisible
         });
@@ -101,7 +112,6 @@ var Lane = React.createClass({
 
     weekdays: function() {
         var timeScale = this.props.xScale;
-        
     },
 
     render: function() {
