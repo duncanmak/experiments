@@ -115,13 +115,14 @@ var Lane = React.createClass({
     },
 
     render: function() {
+
         return DOM.g(
             { onMouseEnter: this.setOpacity.bind(this, 0.1), onMouseLeave: this.setOpacity.bind(this, 0) },
             this.textLabel(),
             this.boundingBox(),
             // this.weekdays(),
             this.separator(),
-            this.props.entries.map(this.renderEntry)
+            _.map(this.props.entries, this.renderEntry)
         );
     }
 });
@@ -165,29 +166,25 @@ var Timeline = React.createClass({
     getInitialState: function() {
         return {
             data: {},
+            hosts: [],
             filter: [] // [this.laneContains.bind(this, 'maccore')]
         };
     },
 
     getDefaultProps: function() { return { exclude: [], keep: [] }; },
 
-    hostNames: function(hosts) { return _.keys(hosts); },
-
-    buildTimes: function(hosts) {
+    componentDidMount: function() {
         var timesForHost = function (host) {
             return host.map(function (i) {
                 return [i.moment, i.moment.clone().add(i.duration)];
             });
         };
 
-        var times = _.chain(hosts).values().map(timesForHost).flatten().value();
-        return [moment.min(times), moment.max(times)];
-    },
-
-    componentDidMount: function() {
         $.get(this.props.url, function (result) {
             var data = this.visibleHosts(result.hostHistory);
-            this.setState({ data: data });
+            var hosts = _.keys(data);
+            var times = _.chain(data).values().map(timesForHost).flatten().value();
+            this.setState({ data: data, hosts: hosts, start: moment.min(times), end: moment.max(times) });
         }.bind(this));
     },
 
@@ -196,7 +193,7 @@ var Timeline = React.createClass({
         var exclude = this.props.exclude;
         var isAncient = function (entry) { return entry.moment.year() < 2014; };
 
-        return _.chain(data)
+        var result = _.chain(data)
             .mapValues(function (i)  { return _.map(i, function(entry) { return _.merge(entry, { moment: moment(entry.date) }); }); })
             .omit(function (v, k) { return _.any([k, v], _.isEmpty); })
             .omit(function (v, k) { return _.any(v, isAncient); } )
@@ -204,6 +201,8 @@ var Timeline = React.createClass({
             .omit(function (v, k) { return _.contains(exclude, k); } )
             .omit(function (v, k) { return _.any(keep, function(i) { return k.indexOf(i) < 0; }); })
             .value();
+
+        return result;
     },
 
     isVisible: function (item) {
@@ -218,18 +217,17 @@ var Timeline = React.createClass({
         if (_.isEmpty(data))
             return undefined;
 
-        var buildTimes      = this.buildTimes(data);
-        var hostNames       = this.hostNames(data);
+        var hosts           = this.state.hosts;
+        var start           = this.state.start;
+        var end             = this.state.end;
         var isVisible       = this.isVisible;
         var setCurrentEntry = this.setCurrentEntry;
-        var start           = _.head(buildTimes);
-        var end             = _.last(buildTimes);
 
         var rightPadding    = 120;
         var xScale          = d3.time.scale().domain([start.toDate(), end.toDate()]).nice(d3.time.week).rangeRound([0, svgWidth - rightPadding]);
-        var yScale          = d3.scale.ordinal().domain(hostNames).rangeBands([0, svgHeight]);
+        var yScale          = d3.scale.ordinal().domain(hosts).rangeBands([0, svgHeight]);
 
-        return hostNames.map(function (host, key) {
+        return _.map(data, function (host, key) {
             return Lane({
                 key          : key,
                 host         : host,
@@ -265,7 +263,7 @@ var Timeline = React.createClass({
     render: function () {
         var svgHeight = this.props.height;
         var svgWidth  = this.props.width;
-        var barHeight = Math.min(this.props.minHeight, (svgHeight - 200) / this.hostNames(this.state.data).length);
+        var barHeight = Math.min(this.props.minHeight, (svgHeight - 200) / this.state.hosts.length);
         return DOM.div(
             {},
             DOM.svg(
