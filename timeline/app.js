@@ -87,7 +87,7 @@ var Lane = React.createClass({
 
     textLabel: function() {
         return DOM.text({
-            x: this.props.svgWidth - this.props.rightPadding + 30,
+            x: this.props.width - this.props.rightPadding + 30,
             y: this.props.yScale(this.props.host) + (this.props.barHeight - 6),
             fontSize: "10px",
             fontFamily: "sans-serif"
@@ -95,7 +95,7 @@ var Lane = React.createClass({
     },
 
     boundingBox: function() {
-        var w = this.props.svgWidth;
+        var w = this.props.width;
         var h = this.props.barHeight;
         var x = 0;
         var y = this.props.yScale(this.props.host);
@@ -104,23 +104,17 @@ var Lane = React.createClass({
     },
 
     separator: function() {
-        var w = this.props.svgWidth;
+        var w = this.props.width;
         var y = this.props.yScale(this.props.host) + this.props.barHeight;
 
         return DOM.line({ x1: 0, y1: y, x2: w, y2: y, stroke: 'gray', strokeWidth: 0.05 });
     },
 
-    weekdays: function() {
-        var timeScale = this.props.xScale;
-    },
-
     render: function() {
-
         return DOM.g(
             { onMouseEnter: this.setOpacity.bind(this, 0.1), onMouseLeave: this.setOpacity.bind(this, 0) },
             this.textLabel(),
             this.boundingBox(),
-            // this.weekdays(),
             this.separator(),
             _.map(this.props.entries, this.renderEntry)
         );
@@ -181,10 +175,18 @@ var Timeline = React.createClass({
         };
 
         $.get(this.props.url, function (result) {
-            var data = this.visibleHosts(result.hostHistory);
-            var hosts = _.keys(data);
-            var times = _.chain(data).values().map(timesForHost).flatten().value();
-            this.setState({ data: data, hosts: hosts, start: moment.min(times), end: moment.max(times) });
+            var data   = this.visibleHosts(result.hostHistory);
+            var hosts  = _.keys(data);
+            var times  = _.chain(data).values().map(timesForHost).flatten().value();
+            var start  = moment.min(times); 
+            var end    = moment.max(times);
+            
+            this.setState({ 
+                data:  data, 
+                hosts: hosts, 
+                start: start,
+                end:   end
+            });
         }.bind(this));
     },
 
@@ -211,35 +213,45 @@ var Timeline = React.createClass({
         return result;
     },
 
-    renderHosts: function(svgHeight, svgWidth, barHeight) {
+    xScale: function() {
+        var d = [this.state.start.toDate(), this.state.end.toDate()];
+        var r = [0, this.props.width - this.rightPadding];
+        return d3.time.scale().domain(d).nice(d3.time.week).rangeRound(r);
+    },
+
+    yScale: function() {
+        var d = this.state.hosts;
+        var r = [0, this.props.height];
+        return d3.scale.ordinal().domain(d).rangeBands(r);
+    },
+
+    barHeight: function() { 
+        return Math.min(this.props.minHeight, (this.props.height - 200) / this.state.hosts.length);
+    },
+
+    rightPadding: 120,
+
+    renderHosts: function() {
         var data = this.state.data;
 
         if (_.isEmpty(data))
             return undefined;
 
-        var hosts           = this.state.hosts;
-        var start           = this.state.start;
-        var end             = this.state.end;
-        var isVisible       = this.isVisible;
-        var setCurrentEntry = this.setCurrentEntry;
-
-        var rightPadding    = 120;
-        var xScale          = d3.time.scale().domain([start.toDate(), end.toDate()]).nice(d3.time.week).rangeRound([0, svgWidth - rightPadding]);
-        var yScale          = d3.scale.ordinal().domain(hosts).rangeBands([0, svgHeight]);
-
-        return _.map(hosts, function (host, key) {
+        return _.map(this.state.hosts, function (host, key) {
             return Lane({
-                key          : key,
-                host         : host,
-                entries      : data[host],
-                xScale       : xScale, yScale: yScale,
-                svgHeight    : svgHeight, svgWidth: svgWidth,
-                barHeight    : barHeight,
-                rightPadding : rightPadding,
-                isVisible    : isVisible,
-                displayEntry : setCurrentEntry
+                key:          key,
+                host:         host,
+                entries:      data[host],
+                xScale:       this.xScale(), 
+                yScale:       this.yScale(),
+                height:       this.props.height, 
+                width:        this.props.width,
+                barHeight:    this.barHeight(),
+                rightPadding: this.rightPadding,
+                isVisible:    this.isVisible,
+                displayEntry: this.setCurrentEntry
             });
-        });
+        }.bind(this));
     },
 
     onMouseLeave: function(evt) { this.setState({ current: undefined }); },
@@ -261,14 +273,15 @@ var Timeline = React.createClass({
     },
 
     render: function () {
-        var svgHeight = this.props.height;
-        var svgWidth  = this.props.width;
-        var barHeight = Math.min(this.props.minHeight, (svgHeight - 200) / this.state.hosts.length);
+        var h = this.props.height;
+        var w = this.props.width;
+        var s = { 'float': 'right', marginRight: '150px' };
+
         return DOM.div(
             {},
             DOM.svg(
-                { style: { 'float': 'right', marginRight: '150px' }, height: svgHeight, width: svgWidth, onMouseLeave: this.onMouseLeave },
-                this.renderHosts(svgHeight, svgWidth, barHeight)
+                { style: s, height: h, width: w, onMouseLeave: this.onMouseLeave },
+                this.renderHosts()
             ),
             Selector({ data: this.state.data, setFilter: this.setFilter }),
             DOM.div({}, this.renderCurrent())
