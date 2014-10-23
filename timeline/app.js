@@ -227,7 +227,7 @@ var Timeline = React.createClass({
         var xScale          = d3.time.scale().domain([start.toDate(), end.toDate()]).nice(d3.time.week).rangeRound([0, svgWidth - rightPadding]);
         var yScale          = d3.scale.ordinal().domain(hosts).rangeBands([0, svgHeight]);
 
-        return _.map(data, function (host, key) {
+        return _.map(hosts, function (host, key) {
             return Lane({
                 key          : key,
                 host         : host,
