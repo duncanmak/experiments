@@ -136,7 +136,7 @@ var Selector = React.createClass({
 
     renderCheckbox: function(product) {
         return DOM.li(
-            { key: product },
+            { key: product, style: { display: 'inline-block' }},
             DOM.input({
                 type: 'checkbox',
                 onChange: this.onChange.bind(this, product)
@@ -146,7 +146,7 @@ var Selector = React.createClass({
 
     render: function () {
         return DOM.div({}, DOM.ul(
-            { style: { padding: 0, listStyleType: 'none' }},
+            { style: { listStyleType: 'none' }},
             this.products().map(this.renderCheckbox)
         ));
     }
@@ -159,6 +159,7 @@ var Timeline = React.createClass({
 
     getInitialState: function() {
         return {
+            current: undefined,
             data: {},
             hosts: [],
             filter: [] // [this.laneContains.bind(this, 'maccore')]
@@ -231,13 +232,41 @@ var Timeline = React.createClass({
 
     rightPadding: 120,
 
+    // NOTE: this assumes the time scale is nice(d3.time.week)
+    renderWeekdays: function() {
+        var domain = this.xScale().domain().map(function (i) { return moment(i); });
+        var start  = domain[0];
+        var end    = domain[1];
+        var weeks  = end.week() - start.week();
+        var scale  = this.xScale();
+        var height = this.props.height;
+
+        return _.range(weeks).map(function(i) {
+            var sunday  = start.clone().add(i, 'weeks');
+            var monday  = sunday.clone().add(1, 'day');
+            var friday  = sunday.clone().add(5, 'day');
+            var origin  = scale(monday.toDate());
+ 
+            return DOM.rect({
+                x:       origin, 
+                y:       0,
+                width:   scale(friday.toDate()) - origin, 
+                height:  height,
+                fill:    "gray",
+                opacity: 0.05
+            });
+        });
+    },
+
     renderHosts: function() {
         var data = this.state.data;
 
         if (_.isEmpty(data))
             return undefined;
 
-        return _.map(this.state.hosts, function (host, key) {
+        var weekdays = this.renderWeekdays();
+      
+        var lanes = _.map(this.state.hosts, function (host, key) {
             return Lane({
                 key:          key,
                 host:         host,
@@ -252,6 +281,8 @@ var Timeline = React.createClass({
                 displayEntry: this.setCurrentEntry
             });
         }.bind(this));
+    
+        return DOM.g({}, [weekdays, lanes]);
     },
 
     onMouseLeave: function(evt) { this.setState({ current: undefined }); },
