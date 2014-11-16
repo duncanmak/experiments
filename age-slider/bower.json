@@ -1,0 +1,19 @@
+{
+  "name": "age-slider",
+  "version": "0.0.0",
+  "homepage": "https://github.com/duncanmak/react-experiments",
+  "authors": [
+    "Duncan Mak <duncan@a-chinaman.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.12.0"
+  }
+}
