@@ -26,11 +26,13 @@ class Hello extends React.Component<any, HelloState> {
             "Reset"
         );
 
+    onTestClicked = (evt) => console.log(this.state.counter);
+
     renderTest = () =>
         DOM.button(
-            { key: 4, onClick: evt => new Error () },
+            { key: 4, onClick: this.onTestClicked },
             "Test"
-        );
+        )
 
     render() {
         return DOM.p({}, [
