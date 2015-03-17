@@ -3,9 +3,10 @@ import _     = require('underscore');
 
 var DOM = React.DOM;
 
+interface HelloProps { label: string  }
 interface HelloState { counter: number }
 
-class Hello extends React.Component<any, HelloState> {
+class Hello extends React.Component<HelloProps, HelloState> {
 
     constructor (props) {
         super(props, undefined);
@@ -36,7 +37,7 @@ class Hello extends React.Component<any, HelloState> {
 
     render() {
         return DOM.p({}, [
-            _.map("now with typescript".split(" "), word => DOM.div({}, word.toUpperCase())),
+            _.map(this.props.label.split(" "), word => DOM.div({}, word.toUpperCase())),
             this.renderCounter(),
             this.renderClicker(),
             this.renderReset(),
