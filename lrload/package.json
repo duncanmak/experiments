@@ -1,0 +1,30 @@
+{
+  "name": "react-with-reload",
+  "version": "0.0.1",
+  "author": "Duncan Mak <duncan.mak@xamarin.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node_modules/.bin/gulp watch"
+  },
+  "dependencies": {
+    "express": "4.12.3",
+    "react": "0.13.1"
+  },
+  "devDependencies": {
+    "browserify": "9.0.3",
+    "colors": "^1.0.3",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-cli": "^0.2.0",
+    "gulp-nodemon": "^2.0.2",
+    "gulp-sourcemaps": "^1.5.1",
+    "gulp-util": "^3.0.4",
+    "livereactload": "0.2.2",
+    "lodash": "^3.6.0",
+    "nodemon": "1.3.7",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "2.6.2"
+  }
+}
