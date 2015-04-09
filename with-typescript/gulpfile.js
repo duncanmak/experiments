@@ -1,10 +1,18 @@
+'use strict';
+
+var _          = require('underscore');
 var browserify = require('browserify');
+var buffer     = require('vinyl-buffer');
+var colors     = require('colors');
 var del        = require('del');
 var gulp       = require('gulp');
+var gutil      = require('gulp-util');
+var lrload     = require('livereactload');
+var nodemon    = require('gulp-nodemon');
 var path       = require('path');
-var serve      = require('gulp-serve');
 var source     = require('vinyl-source-stream');
-var _          = require('underscore');
+var tsify      = require('tsify');
+var watchify   = require('watchify');
 
 var htmlSources = [
     'index.html'
@@ -20,27 +28,36 @@ var typings = relativeToRoot(
     'typings/underscore/underscore.d.ts'
 );
 
-gulp.task('browserify', function () {
-    var entries = typescriptSources.concat(typings);
-
-    browserify({ entries: entries, debug: true })
-        .plugin('tsify')
-        .bundle()
-        .on('error', function(err) { console.log (err.message); this.end(); })
-        .pipe(source('bundle.js'))
-        .pipe(gulp.dest('dist'));
+var bundler = browserify({
+    entries: typescriptSources.concat(typings),
+    debug: true,
+    transform: [lrload],
+    cache:        {},
+    packageCache: {},
+    fullPaths: true
 });
 
+gulp.task('browserify', build);
+
 gulp.task('watch', function() {
-    gulp.watch(typescriptSources, ['browserify']);
-    gulp.watch(htmlSources,       ['copyIndexHtml']);
+
+    gulp.watch(htmlSources, ['copyIndexHtml']);
+    lrload.listen();
+
+    return watchify(build())
+        .on('error', gutil.log)
+        .on('update', build);
 });
 
 gulp.task('copyIndexHtml', function() {
     gulp.src(htmlSources).pipe(gulp.dest('dist'));
 });
 
-gulp.task('serve', ['default', 'watch'], serve('dist'));
+gulp.task('serve', ['watch'], function() {
+    nodemon({ script: 'server.js', ext: 'js', ignore: ['gulpfile.js', 'dist/bundle.js', 'node_modules/*'] })
+        .on('change', [])
+        .on('restart', function () { gutil.log('Server restarted'); });
+});
 
 gulp.task('default', ['browserify', 'copyIndexHtml']);
 
@@ -50,3 +67,16 @@ function relativeToRoot () {
     var splitPath = function(p) { return path.join.apply(undefined, p.split('/')); };
     return _.map(arguments, _.compose(path.resolve, splitPath));
 };
+
+function build () {
+    gutil.log('Rebuilding bundle');
+
+    return bundler
+        .plugin('tsify')
+        .bundle()
+        .on('error', function(err) { console.log (err.message); this.end(); })
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(gulp.dest('dist'))
+        .pipe(lrload.gulpnotify());
+}

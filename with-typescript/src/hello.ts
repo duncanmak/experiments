@@ -46,5 +46,6 @@ class Hello extends React.Component<HelloProps, HelloState> {
 
     }
 }
+var factory = React.createFactory(Hello);
 
-export = Hello;
+export = factory;
