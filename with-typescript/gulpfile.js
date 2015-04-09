@@ -37,7 +37,7 @@ var bundler = browserify({
     fullPaths: true
 });
 
-gulp.task('browserify', build);
+gulp.task('build', build);
 
 gulp.task('watch', function() {
 
@@ -66,15 +66,24 @@ gulp.task('clean', function() { del(['dist']); });
 function relativeToRoot () {
     var splitPath = function(p) { return path.join.apply(undefined, p.split('/')); };
     return _.map(arguments, _.compose(path.resolve, splitPath));
-};
+}
 
 function build () {
     gutil.log('Rebuilding bundle');
 
+    var bundler = browserify({
+        entries: typescriptSources.concat(typings),
+        debug: true,
+        transform: [lrload],
+        cache:        {},
+        packageCache: {},
+        fullPaths: true
+    });
+
     return bundler
         .plugin('tsify')
         .bundle()
-        .on('error', function(err) { console.log (err.message); this.end(); })
+        .on('error', function(err) { console.log (err.message.bgRed); })
         .pipe(source('bundle.js'))
         .pipe(buffer())
         .pipe(gulp.dest('dist'))
