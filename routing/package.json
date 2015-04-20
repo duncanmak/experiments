@@ -1,0 +1,31 @@
+{
+  "name": "routing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^3.7.0",
+    "react": "^0.13.2",
+    "react-router": "^0.13.2"
+  },
+  "devDependencies": {
+    "browserify": "^9.0.8",
+    "colors": "^1.0.3",
+    "del": "^1.1.1",
+    "express": "^4.12.3",
+    "gulp-concat-css": "^2.2.0",
+    "gulp-if": "^1.2.5",
+    "gulp-nodemon": "^2.0.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-typescript": "^2.6.0",
+    "gulp-util": "^3.0.4",
+    "livereactload": "^0.4.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.1.1"
+  }
+}
