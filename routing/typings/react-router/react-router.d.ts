@@ -9,15 +9,15 @@ declare module ReactRouter {
 
     // Based on https://github.com/rackt/react-router/tree/master/docs/api
 
-    interface Router<P, S, T extends Location> {
+    interface Router<P, S, T extends LocationBase> {
         run(routes: React.ReactElement<RouteProp>, location?: T, callback?: RouterRunCallback<P, S>): void;
-        create(options: RouterCreateOption): Router<P, S, T>;
+        create(options: RouterCreateOption<T>): Router<P, S, T>;
     }
 
-    function run<P, S>(routes: RouteComponent, callback?: RouterRunCallback<P, S>): void;
-    function run<P, S, T extends Location>(routes: RouteComponent, location?: T, callback?: RouterRunCallback<P, S>): void;
+    function run<P, S>(routes: Route, callback?: RouterRunCallback<P, S>): void;
+    function run<P, S, T extends LocationBase>(routes: Route, location?: T, callback?: RouterRunCallback<P, S>): void;
 
-    function create<P, S, T extends Location>(options: RouterCreateOption): Router<P, S, T>;
+    function create<P, S, T extends LocationBase>(options: RouterCreateOption<T>): Router<P, S, T>;
 
     interface RouterState {
         path: string;
@@ -25,12 +25,12 @@ declare module ReactRouter {
         pathname: string;
         params: {};
         query: {};
-        routes : RouteComponent[];
+        routes : React.ReactElement<RouteProp>;
     }
 
-    interface RouterCreateOption {
-        routes: RouteComponent[];
-        location?: Location;
+    interface RouterCreateOption<T extends LocationBase> {
+        routes: React.ReactElement<RouteProp>;
+        location?: T;
         scrollBehavior?: ScrollBehavior;
     }
 
@@ -50,7 +50,7 @@ declare module ReactRouter {
         getCurrentParams(): string;
         getCurrentQuery(): string;
         isActive(routeName: string, params: {}, query: {}): boolean;
-        getCurrentRoutes(): RouteComponent[];
+        getCurrentRoutes(): Route[];
     }
 
     interface LocationBase {
@@ -75,7 +75,7 @@ declare module ReactRouter {
     var HashLocation:    Location;
     var HistoryLocation: Location;
     var RefreshLocation: RefreshLocation;
-    var StaticLocation:  LocationBase;
+    var LocationBase:    LocationBase;
     var TestLocation:    Location;
 
     interface Transition {
@@ -87,24 +87,22 @@ declare module ReactRouter {
     //
     // Renderable Components
     //
-    // interface RouteHandlerStatic {
-    //     new(): Component<void, void>;
+    interface RouteHandler extends React.ComponentClass<any> {
+        willTransitionTo(
+            transition: Transition,
+            params: {},
+            query: {},
+            callback: Function
+        ): void;
 
-    //     willTransitionTo?(
-    //         transition: Transition,
-    //         params: {},
-    //         query: {},
-    //         callback: Function
-    //     ): void;
+        willTransitionFrom(
+            transition: Transition,
+            component: React.ReactElement<any>,
+            callback: Function
+        ): void;
+    }
 
-    //     willTransitionFrom?(
-    //         transition: Transition,
-    //         component: ReactElement<any>,
-    //         callback: Function
-    //     ): void;
-    // }
-
-    var RouteHandler: React.ComponentClass<any>;
+    var RouteHandler: RouteHandler;
 
     interface LinkProp {
         to: string;
@@ -124,11 +122,12 @@ declare module ReactRouter {
         handler: React.ComponentClass<any>;
         name?: string;
         path?: string;
-        children?: RouteComponent[];
+        children?: Route[];
         ignoreScrollBehavior?: any // TODO
     }
 
-    interface RouteComponent extends React.Component<RouteProp, any> {}
+    type Route = React.ReactElement<RouteProp>;
+
     var Route: React.ComponentClass<RouteProp>;
     var DefaultRoute: React.ComponentClass<RouteProp>;
     var NotFoundRoute: React.ComponentClass<RouteProp>;

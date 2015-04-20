@@ -3,10 +3,10 @@
 import React  = require('react');
 import Router = require('react-router');
 
+var DefaultRoute = React.createFactory(Router.DefaultRoute);
 var Link         = React.createFactory(Router.Link);
-var DefaultRoute = Router.DefaultRoute;
-var Route        = Router.Route;
-var RouteHandler = Router.RouteHandler;
+var Route        = React.createFactory(Router.Route);
+var RouteHandler = React.createFactory(Router.RouteHandler);
 
 var DOM = React.DOM;
 
@@ -29,7 +29,14 @@ class App extends React.Component<any, any> {
 
 class Inbox extends React.Component<any, any> {
     DisplayName = 'Inbox';
-    render = () => DOM.p ({}, 'Inbox');
+    render() {
+        return DOM.div(
+            {},
+            React.createElement(Toolbar, {}),
+            React.createElement(Messages, {}),
+            RouteHandler({})
+        );
+    }
 }
 
 class Calendar extends React.Component<any, any> {
@@ -42,11 +49,31 @@ class Dashboard extends React.Component<any, any> {
     render = () => DOM.p ({}, 'Dashboard');
 }
 
+class Toolbar extends React.Component<any, any> {
+    DisplayName = 'Toolbar';
+    render = () => DOM.p ({}, 'Toolbar');
+}
+
+class Messages extends React.Component<any, any> {
+    DisplayName = 'Messages';
+    render = () => DOM.p ({}, this.context.router.getCurrentParams().messageId);
+}
+
+Messages.contextTypes = { router: React.PropTypes.func };
+
+class InboxStats extends React.Component<any, any> {
+    DisplayName = 'InboxStats';
+    render = () => DOM.p ({}, 'InboxStats');
+}
+
 var routes = Route(
     { name: 'app', path: '/', handler: App },
-    Route({ name: 'inbox', handler: Inbox }),
-    Route({ name: 'calendar', handler: Calendar }),
-    DefaultRoute({ handler: Dashboard }));
+    Route(
+        { name: 'inbox', handler: Inbox },
+        Route({ name: 'message', path: ':messageId', handler: Messages }),
+        DefaultRoute({ handler: InboxStats })),
+    Route({name: 'calendar', handler: Calendar }),
+    DefaultRoute({ handler: Dashboard}));
 
 Router.run(routes, function (Handler) {
     React.render(React.createElement(Handler, {}), document.body);
