@@ -1,6 +1,5 @@
 // From https://github.com/rackt/react-router/blob/master/docs/guides/overview.md
 
-import React  = require('react');
 import Router = require('react-router');
 
 var DefaultRoute = React.createFactory(Router.DefaultRoute);
@@ -55,11 +54,11 @@ class Toolbar extends React.Component<any, any> {
 }
 
 class Messages extends React.Component<any, any> {
+    context: { router: Router.Context };
+    // static contextTypes  = { router: React.PropTypes.func };
     DisplayName = 'Messages';
     render = () => DOM.p ({}, this.context.router.getCurrentParams().messageId);
 }
-
-Messages.contextTypes = { router: React.PropTypes.func };
 
 class InboxStats extends React.Component<any, any> {
     DisplayName = 'InboxStats';

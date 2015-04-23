@@ -3,53 +3,49 @@
 // Definitions by: Duncan Mak <https://github.com/duncanmak>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="../react/react.d.ts" />
-
 declare module ReactRouter {
 
     // Based on https://github.com/rackt/react-router/tree/master/docs/api
+    function run(routes: Route, callback: Callback): void;
+    function run<L extends LocationBase>(routes: Route, location: L, callback: Callback): void;
 
-    interface Router<P, S, T extends LocationBase> {
-        run(routes: React.ReactElement<RouteProp>, location?: T, callback?: RouterRunCallback<P, S>): void;
-        create(options: RouterCreateOption<T>): Router<P, S, T>;
+    function create<L extends LocationBase>(options: CreateOption<L>): Router;
+
+    interface Router {
+        run(callback: Callback): void;
     }
 
-    function run<P, S>(routes: Route, callback?: RouterRunCallback<P, S>): void;
-    function run<P, S, T extends LocationBase>(routes: Route, location?: T, callback?: RouterRunCallback<P, S>): void;
-
-    function create<P, S, T extends LocationBase>(options: RouterCreateOption<T>): Router<P, S, T>;
-
-    interface RouterState {
+    interface State {
         path: string;
         action: string;
         pathname: string;
-        params: {};
-        query: {};
-        routes : React.ReactElement<RouteProp>;
+        params: any;
+        query: any;
+        routes: Route
     }
 
-    interface RouterCreateOption<T extends LocationBase> {
-        routes: React.ReactElement<RouteProp>;
-        location?: T;
+    interface CreateOption<L extends LocationBase> {
+        routes: Route;
+        location?: L;
         scrollBehavior?: ScrollBehavior;
     }
 
-    interface RouterRunCallback<P, S> {
-        (Handler: React.ComponentClass<P>, state: RouterState): void;
+    interface Callback {
+        (Handler: React.ComponentClass<any>, state: State): void;
     }
 
-    interface RouterContext {
-        transitionTo(to: string, params?: {}, query?: {}): void;
-        replaceWith(to: string, params?: {}, query?: {}): void;
+    interface Context {
+        transitionTo(to: string, params?: any, query?: any): void;
+        replaceWith(to: string, params?: any, query?: any): void;
         goBack(): void;
-        makePath(to: string, params?: {}, query?: {}): string;
-        makeHref(to: string, params?: {}, query?: {}): string;
+        makePath(to: string, params?: any, query?: any): string;
+        makeHref(to: string, params?: any, query?: any): string;
 
         getCurrentPath(): string;
         getCurrentPathname(): string;
-        getCurrentParams(): string;
+        getCurrentParams(): any;
         getCurrentQuery(): string;
-        isActive(routeName: string, params: {}, query: {}): boolean;
+        isActive(routeName: string, params: any, query: any): boolean;
         getCurrentRoutes(): Route[];
     }
 
@@ -80,7 +76,7 @@ declare module ReactRouter {
 
     interface Transition {
         abort(): void;
-        redirect(to: string, params?: {}, query?: {}): void;
+        redirect(to: string, params?: any, query?: any): void;
         retry(): void;
     }
 
@@ -90,8 +86,8 @@ declare module ReactRouter {
     interface RouteHandler extends React.ComponentClass<any> {
         willTransitionTo(
             transition: Transition,
-            params: {},
-            query: {},
+            params: any,
+            query: any,
             callback: Function
         ): void;
 
@@ -104,12 +100,20 @@ declare module ReactRouter {
 
     var RouteHandler: RouteHandler;
 
+    // Link.propTypes = {
+    //     activeClassName: PropTypes.string.isRequired,
+    //     to: PropTypes.oneOfType([ PropTypes.string, PropTypes.route ]).isRequired,
+    //     params: PropTypes.object,
+    //     query: PropTypes.object,
+    //     activeStyle: PropTypes.object,
+    //     onClick: PropTypes.func
+    // };
     interface LinkProp {
-        to: string;
-        params?: {};
-        query?: {};
-        activeClassName?: string;
-        activeStyle?: string;
+        activeClassName?: string; // defaults to 'active'
+        to: string | Route;
+        params?: any;
+        query?: any;
+        activeStyle?: any;
         onClick?: Function;
     }
 
@@ -118,37 +122,48 @@ declare module ReactRouter {
     //
     // Configuration Components
     //
+
+    // Route.propTypes = {
+    //   name: PropTypes.string,
+    //   path: PropTypes.string,
+    //   handler: PropTypes.func,
+    //   ignoreScrollBehavior: PropTypes.bool
+    // };
     interface RouteProp {
-        handler: React.ComponentClass<any>;
         name?: string;
         path?: string;
-        children?: Route[];
-        ignoreScrollBehavior?: any // TODO
+        handler: Function;
+        ignoreScrollBehavior?: boolean
     }
 
     type Route = React.ReactElement<RouteProp>;
 
-    var Route: React.ComponentClass<RouteProp>;
-    var DefaultRoute: React.ComponentClass<RouteProp>;
+    var Route:         React.ComponentClass<RouteProp>;
+    var DefaultRoute:  React.ComponentClass<RouteProp>;
     var NotFoundRoute: React.ComponentClass<RouteProp>;
 
+    // Redirect.propTypes = {
+    //   path: PropTypes.string,
+    //   from: PropTypes.string, // Alias for path.
+    //   to: PropTypes.string,
+    //   handler: PropTypes.falsy
+    // };
     interface RedirectProp {
-        from: string;
-        to: string;
-        params?: {};
-        query?: {};
+        path?: string;
+        from?: string;
+        to?: string;
+        handler?: any;
     }
     var Redirect: React.ComponentClass<RedirectProp>;
 
     interface ScrollBehavior {
-        updateScrollPosition(position: {x: number; y: number;}, actionType: string): void;
+        updateScrollPosition(position: { x: number; y: number; }, actionType: string): void;
     }
 
-     var ImitateBrowserBehavior: ScrollBehavior;
-     var ScrollToTopBehavior: ScrollBehavior;
+    var ImitateBrowserBehavior: ScrollBehavior;
+    var ScrollToTopBehavior:    ScrollBehavior;
 }
 
 declare module "react-router" {
-    import React = require('react');
     export = ReactRouter
 }

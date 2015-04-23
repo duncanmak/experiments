@@ -13,7 +13,7 @@ var sources = relativeToRoot(
 );
 
 var typings = relativeToRoot(
-    'typings/react/react.d.ts',
+    'typings/react/react-global.d.ts',
     'typings/react-router/react-router.d.ts'
 );
 

@@ -18,6 +18,7 @@
     "colors": "^1.0.3",
     "del": "^1.1.1",
     "express": "^4.12.3",
+    "gulp": "^3.8.11",
     "gulp-concat-css": "^2.2.0",
     "gulp-if": "^1.2.5",
     "gulp-nodemon": "^2.0.2",
