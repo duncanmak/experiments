@@ -1,0 +1,23 @@
+{
+  "name": "d3-experiments",
+  "version": "0.0.0",
+  "main": "app.js",
+  "moduleType": [
+    "amd"
+  ],
+  "authors": [
+    "Duncan Mak"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "~1.6.0",
+    "d3": "~3.4.9"
+  }
+}
