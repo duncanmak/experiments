@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "target": "ES5",
+        "outDir": "dist",
+        "rootDir": "src"
+    },
+    "files": [
+        "app.ts",
+        "main.ts",
+        "actions.ts",
+        "tsd.d.ts"
+    ],
+    "html": [
+        "index.html"
+    ],
+    "css": [
+    ],
+    "libraries": [
+        "react",
+        "rx"
+    ]
+}

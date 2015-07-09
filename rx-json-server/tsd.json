@@ -1,0 +1,54 @@
+{
+    "version": "v4",
+    "repo": "borisyankov/DefinitelyTyped",
+    "ref": "master",
+    "path": "typings",
+    "bundle": "src/tsd.d.ts",
+    "installed": {
+        "express-session/express-session.d.ts": {
+            "commit": "d67c5e3e1a1291ab58dcaace6ce76f69e860d33c"
+        },
+        "express/express.d.ts": {
+            "commit": "d67c5e3e1a1291ab58dcaace6ce76f69e860d33c"
+        },
+        "form-data/form-data.d.ts": {
+            "commit": "d67c5e3e1a1291ab58dcaace6ce76f69e860d33c"
+        },
+        "lodash/lodash.d.ts": {
+            "commit": "d67c5e3e1a1291ab58dcaace6ce76f69e860d33c"
+        },
+        "node/node.d.ts": {
+            "commit": "d67c5e3e1a1291ab58dcaace6ce76f69e860d33c"
+        },
+        "request/request.d.ts": {
+            "commit": "d67c5e3e1a1291ab58dcaace6ce76f69e860d33c"
+        },
+        "rx/rx.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "rx/rx-lite.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "JSONStream/JSONStream.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "moment/moment.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "moment/moment-node.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "glob/glob.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "minimatch/minimatch.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "rx/rx.async-lite.d.ts": {
+            "commit": "8c7444882a2bc2ab87387f8f736a7d97e89b9c90"
+        },
+        "compression/compression.d.ts": {
+            "commit": "2c53b9b2d13523d5d9cef4866ab1a22a6fee1ba8"
+        }
+    }
+}

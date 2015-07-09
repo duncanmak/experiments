@@ -1,0 +1,34 @@
+{
+  "name": "intervals",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Duncan Mak <duncan.mak@xamarin.com>",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^0.13.1",
+    "rx": "^2.5.2"
+  },
+  "devDependencies": {
+    "browserify": "^9.0.8",
+    "colors": "^1.0.3",
+    "del": "^1.1.1",
+    "express": "^4.12.3",
+    "gulp": "^3.8.11",
+    "gulp-concat-css": "^2.2.0",
+    "gulp-if": "^1.2.5",
+    "gulp-nodemon": "^2.0.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-tsd": "0.0.4",
+    "gulp-typescript": "^2.6.0",
+    "gulp-util": "^3.0.4",
+    "livereactload": "^0.4.0",
+    "lodash": "^3.6.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.1.1"
+  }
+}

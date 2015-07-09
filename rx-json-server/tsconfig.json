@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "target": "ES5",
+        "outDir": "dist"
+    },
+    "files": [
+        "src/entry.ts",
+        "src/processor.ts",
+        "src/standalone.ts",
+        "src/tsd.d.ts"
+    ]
+}

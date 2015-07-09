@@ -22,7 +22,7 @@ class App extends React.Component<any, any> {
                     DOM.li({}, Link({to: 'inbox'}, 'Inbox')),
                     DOM.li({}, Link({to: 'calendar'}, 'Calendar'))),
                 'Logged in as Jane'),
-            React.createElement(Router.RouteHandler, {}));
+            RouteHandler({}));
     }
 }
 
@@ -57,7 +57,10 @@ class Messages extends React.Component<any, any> {
     context: { router: Router.Context };
     // static contextTypes  = { router: React.PropTypes.func };
     DisplayName = 'Messages';
-    render = () => DOM.p ({}, this.context.router.getCurrentParams().messageId);
+    render() {
+        var context: Router.Context = this.context.router;
+        return DOM.p ({}, context.getCurrentParams().messageId);
+    }
 }
 
 class InboxStats extends React.Component<any, any> {

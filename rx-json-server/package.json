@@ -1,0 +1,27 @@
+{
+  "name": "lazy-bot-endpoint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "compression": "^1.4.4",
+    "express": "^4.12.4",
+    "glob": "^5.0.10",
+    "gulp": "^3.9.0",
+    "gulp-typescript": "^2.7.6",
+    "immutable": "^3.7.3",
+    "jsonstream": "^1.0.3",
+    "lodash": "^3.9.3",
+    "moment": "^2.10.3",
+    "rx": "^2.5.3",
+    "rx-node": "^1.0.0",
+    "typescript": "^1.5.0-beta"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node standalone.js"
+  },
+  "author": "Connor Adsit",
+  "license": "ISC"
+}
