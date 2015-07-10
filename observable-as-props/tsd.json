@@ -23,7 +23,10 @@
     "lodash/lodash.d.ts": {
       "commit": "be03157bace6e6465e63f13073d7b68e8ea1303c"
     },
-    "node/node.d.ts": {
+    "react/react.d.ts": {
+      "commit": "be03157bace6e6465e63f13073d7b68e8ea1303c"
+    },
+    "rx/rx.d.ts": {
       "commit": "be03157bace6e6465e63f13073d7b68e8ea1303c"
     }
   }

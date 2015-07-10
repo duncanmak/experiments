@@ -1,5 +1,3 @@
-const RxDom = require('rx-dom');
-
 import * as React from 'react';
 import { Component, DOM } from 'react';
 import { Observable, Scheduler } from 'rx';

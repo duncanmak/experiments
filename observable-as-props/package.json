@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
-        "build": "rm -f dist/* && cp index.html dist/ && tsc -p . && (cd dist; browserify --debug *.js > bundle.js)"
+        "build": "rm -f dist/* && tsc -p . && cp index.html dist/ && (cd dist; browserify --debug *.js > bundle.js)"
     },
     "author": "Duncan Mak <duncan@a-chinaman.com>",
     "license": "ISC",
