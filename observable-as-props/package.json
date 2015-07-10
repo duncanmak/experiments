@@ -1,21 +1,22 @@
 {
-  "name": "observable-as-props",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "rm -f dist/* && cp index.html dist/ && tsc -p . && (cd dist; browserify --debug *.js > bundle.js)"
-  },
-  "author": "Duncan Mak <duncan@a-chinaman.com>",
-  "license": "ISC",
-  "dependencies": {
-    "lodash": "^3.10.0",
-    "react": "^0.13.3",
-    "rx": "^2.5.3",
-    "rx-dom": "^6.0.0"
-  },
-  "devDependencies": {
-    "tsd": "^0.6.3",
-    "typescript": "^1.5.0-beta"
-  }
+    "name": "observable-as-props",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
+        "build": "rm -f dist/* && cp index.html dist/ && tsc -p . && (cd dist; browserify --debug *.js > bundle.js)"
+    },
+    "author": "Duncan Mak <duncan@a-chinaman.com>",
+    "license": "ISC",
+    "dependencies": {
+        "lodash": "^3.10.0",
+        "react": "^0.13.3",
+        "rx": "^2.5.3",
+        "rx-dom": "^6.0.0"
+    },
+    "devDependencies": {
+        "tsd": "^0.6.3",
+        "typescript": "^1.5.0-beta"
+    }
 }
