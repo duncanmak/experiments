@@ -5,33 +5,13 @@ import { range } from 'lodash';
 
 const RxDOM = require('rx-dom');
 const floatLeft = { style: { float: 'left' } };
-const num = 50;
-
-class App extends Component<any, any> {
-
-    constructor(props: any) {
-        super(props);
-    }
-
-    render() {
-        let RAF     = RxDOM.Scheduler.requestAnimationFrame;
-        let timeout = Scheduler.timeout;
-
-        return DOM.div(
-            {},
-            React.createElement(View,   { name: 'array',        values: range(0, num) }),
-            React.createElement(ObView, { name: 'sync',         values: Observable.range(0, num),         scheduler: RAF }),
-         // React.createElement(ObView, { name: 'async fast',   values: Observable.interval(1).take(num), scheduler: timeout }),
-            React.createElement(ObView, { name: 'async smooth', values: Observable.interval(1).take(num), scheduler: RAF })
-        )}
-}
 
 interface Props {
     name: string;
     values: any;
 }
 
-class View<P extends Props> extends Component<P, any> {
+class ViewComponent<P extends Props> extends Component<P, any> {
     constructor(props: any) {
         super(props);
         this.state = { values: [] };
@@ -40,7 +20,7 @@ class View<P extends Props> extends Component<P, any> {
     values() { return this.props.values; }
 
     render() {
-        // console.log('render', this.props.name);
+        console.log('render', this.props.name, this.values());
         return DOM.div(
             {},
             DOM.ul(
@@ -50,18 +30,19 @@ class View<P extends Props> extends Component<P, any> {
     }
 }
 
+const View = React.createFactory(ViewComponent);
+
 interface ObProps extends Props {
     scheduler: Rx.Scheduler;
     values: Observable<number>;
 }
 
-class ObView extends View<ObProps> {
+class ObViewComponent extends ViewComponent<ObProps> {
     componentDidMount() {
         this.props.values
+            .bufferWithTime(100)
             .observeOn(this.props.scheduler)
-            .bufferWithTime(16)
             .subscribe(i => {
-                console.log(this.props.name, i);
                 this.setState({ values: this.state.values.concat(i) });
             });
     }
@@ -69,4 +50,39 @@ class ObView extends View<ObProps> {
    values() { return this.state.values; }
 }
 
-export default App;
+const ObView = React.createFactory(ObViewComponent);
+
+interface Input {
+    array(): number[];
+    hot(): Observable<number>;
+    cold(): Observable<number>;
+}
+
+const rangeInput = (count: number) => ({
+    array: () => range(0, count),
+    hot: () => Observable.interval(1).take(count),
+    cold: () => Observable.range(0, count)
+});
+
+export default class App extends Component<any, any> {
+
+    input: Input;
+
+    constructor(props: any) {
+        super(props);
+        this.input = rangeInput(50);
+    }
+
+    render() {
+        let RAF     = RxDOM.Scheduler.requestAnimationFrame;
+        let timeout = Scheduler.timeout;
+
+        return DOM.div(
+            {},
+            View(  { name: 'array',        values: this.input.array() }),
+            ObView({ name: 'cold RAF',     values: this.input.cold(), scheduler: RAF }),
+            ObView({ name: 'hot RAF',      values: this.input.hot(),  scheduler: RAF }),
+            ObView({ name: 'cold timeout', values: this.input.cold(), scheduler: timeout }),
+            ObView({ name: 'hot timeout',  values: this.input.hot(),  scheduler: timeout })
+        )}
+};

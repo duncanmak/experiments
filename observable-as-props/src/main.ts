@@ -8,4 +8,3 @@ React.render(
     React.createElement(App, {}),
     document.getElementById('app'));
 
-// Rx.Observable.repeat(true, 10, RxDOM.Scheduler.requestAnimationFrame).timeInterval().subscribe(x => console.log(x))
