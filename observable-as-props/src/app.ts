@@ -14,13 +14,13 @@ class App extends Component<any, any> {
     }
 
     render() {
-        let RAF = RxDOM.Scheduler.requestAnimationFrame;
+        let RAF     = RxDOM.Scheduler.requestAnimationFrame;
         let timeout = Scheduler.timeout;
 
         return DOM.div(
             {},
             React.createElement(View,   { name: 'array',        values: range(0, num) }),
-            React.createElement(ObView, { name: 'sync',         values: Observable.range(0, num),         scheduler: RAF,  }),
+            React.createElement(ObView, { name: 'sync',         values: Observable.range(0, num),         scheduler: RAF }),
          // React.createElement(ObView, { name: 'async fast',   values: Observable.interval(1).take(num), scheduler: timeout }),
             React.createElement(ObView, { name: 'async smooth', values: Observable.interval(1).take(num), scheduler: RAF })
         )}
@@ -40,7 +40,7 @@ class View<P extends Props> extends Component<P, any> {
     values() { return this.props.values; }
 
     render() {
-        console.log('render', this.props.name);
+        // console.log('render', this.props.name);
         return DOM.div(
             {},
             DOM.ul(
@@ -57,9 +57,13 @@ interface ObProps extends Props {
 
 class ObView extends View<ObProps> {
     componentDidMount() {
-        this.props.values.observeOn(this.props.scheduler).subscribe((i: number) => {
-            this.setState({ values: this.state.values.concat([i]) })
-        });
+        this.props.values
+            .observeOn(this.props.scheduler)
+            .bufferWithTime(16)
+            .subscribe(i => {
+                console.log(this.props.name, i);
+                this.setState({ values: this.state.values.concat(i) });
+            });
     }
 
    values() { return this.state.values; }
