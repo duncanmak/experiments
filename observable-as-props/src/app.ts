@@ -1,7 +1,7 @@
 import { Component, DOM } from 'react';
 import { Observable, Scheduler } from 'rx';
 import { range } from 'lodash';
-import { View, ObView } from './views';
+import { View, ArrayContainer, ObservableContainer } from './views';
 
 const RxDOM = require('rx-dom');
 
@@ -20,7 +20,7 @@ const rangeInput = (count: number) => ({
 export default class App extends Component<any, any> {
 
     input: Input;
-
+    
     constructor(props: any) {
         super(props);
         this.input = rangeInput(50);
@@ -32,9 +32,9 @@ export default class App extends Component<any, any> {
 
         return DOM.div(
             {},
-            View(  { name: 'array',        values: this.input.array() }),
-            ObView({ name: 'cold RAF',     values: this.input.cold(), scheduler: RAF }),
-            ObView({ name: 'hot RAF',      values: this.input.hot(),  scheduler: RAF })
+            ArrayContainer     ({ values: this.input.array() },                View({ name: 'array' })),
+            ObservableContainer({ values: this.input.cold(), scheduler: RAF }, View({ name: 'cold RAF' })),
+            ObservableContainer({ values: this.input.hot(),  scheduler: RAF }, View({ name: 'hot RAF' }))
          // ObView({ name: 'cold timeout', values: this.input.cold(), scheduler: timeout }),
          // ObView({ name: 'hot timeout',  values: this.input.hot(),  scheduler: timeout })
         )}

@@ -1,44 +1,62 @@
-import { Component, DOM, createFactory } from 'react';
+import * as React from 'react';
+import { Component, DOM, createFactory, Children, cloneElement } from 'react';
 import { Observable } from 'rx';
 
-interface Props {
+interface Props extends React.Props<any> {
     name: string;
-    values: any;
+    values?: number[]; // optional because of usage in app.ts
 }
 
-interface State {
-    values: number[];
-}
-
-class ViewComponent<P extends Props> extends Component<P, State> {
-
-    values() { return this.props.values; }
-
+class ViewComponent extends React.Component<Props, any> {
     render() {
         let time = () => {
             let d = new Date();
-            return `${d.getSeconds()}s ${d.getMilliseconds()}ms`;
+            return `${d.getSeconds() }s ${d.getMilliseconds() }ms`;
         };
 
-        console.log(time(), 'render', this.props.name, this.values().length);
+        console.log(time(), 'render', this.props.name, this.props.values.length);
+
         return DOM.div(
             {},
             DOM.ul(
                 { style: { float: 'left' } },
                 DOM.div({}, this.props.name),
-                this.values().map((v: number) => DOM.li({ key: v }, v))));
+                this.props.values.map((v: number) => DOM.li({ key: v }, v))));
+    }
+}
+export const View = createFactory(ViewComponent);
+
+interface Values {
+    values: number[];
+}
+
+class ContainerComponent<P extends React.Props<any>, S> extends React.Component<P, S> {
+    render() {
+        return DOM.div({}, this.renderChildren());
+    }
+
+    renderChildren() {
+        return Children.map(this.props.children, (child: React.ReactElement<any>) => {
+            return cloneElement(child, this.values());
+        });
+    }
+
+    /* abstract */ values(): Values {
+        return undefined;
     }
 }
 
-export const View = createFactory(ViewComponent);
+class ArrayContainerComponent extends ContainerComponent<Values, any> {
+    values() { return this.props; }
+}
+export const ArrayContainer = createFactory(ArrayContainerComponent);
 
-interface ObProps extends Props {
-    scheduler: Rx.Scheduler;
+interface ObservableValues extends React.Props<any> {
     values: Observable<number>;
+    scheduler: Rx.Scheduler;
 }
 
-class ObViewComponent extends ViewComponent<ObProps> {
-
+class ObservableContainerComponent extends ContainerComponent<ObservableValues, Values> {
     constructor(props: any) {
         super(props);
         this.state = { values: [] };
@@ -53,7 +71,6 @@ class ObViewComponent extends ViewComponent<ObProps> {
             });
     }
 
-   values() { return this.state.values; }
+    values() { return this.state; }
 }
-
-export const ObView = createFactory(ObViewComponent);
+export const ObservableContainer = createFactory(ObservableContainerComponent);
