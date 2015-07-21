@@ -8,6 +8,7 @@ interface Props extends React.Props<any> {
 }
 
 class ViewComponent extends React.Component<Props, any> {
+
     render() {
         let time = () => {
             let d = new Date();
@@ -16,12 +17,10 @@ class ViewComponent extends React.Component<Props, any> {
 
         console.log(time(), 'render', this.props.name, this.props.values.length);
 
-        return DOM.div(
-            {},
-            DOM.ul(
-                { style: { float: 'left' } },
-                DOM.div({}, this.props.name),
-                this.props.values.map((v: number) => DOM.li({ key: v }, v))));
+        return DOM.ul(
+            { style: { float: 'left' } },
+            DOM.div({}, this.props.name),
+            this.props.values.map((v: number) => DOM.li({ key: v }, v)));
     }
 }
 export const View = createFactory(ViewComponent);
@@ -31,14 +30,14 @@ interface Values {
 }
 
 class ContainerComponent<P extends React.Props<any>, S> extends React.Component<P, S> {
-    render() {
-        return DOM.div({}, this.renderChildren());
+
+    shouldComponentUpdate(nextProps: P, nextState: S) {
+        return this.props != nextProps || this.state != nextState;
     }
 
-    renderChildren() {
-        return Children.map(this.props.children, (child: React.ReactElement<any>) => {
-            return cloneElement(child, this.values());
-        });
+    render() {
+        let child = <React.ReactElement<any>> Children.only(this.props.children);
+        return cloneElement(child, this.values());
     }
 
     /* abstract */ values(): Values {

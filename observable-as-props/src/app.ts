@@ -20,7 +20,7 @@ const rangeInput = (count: number) => ({
 export default class App extends Component<any, any> {
 
     input: Input;
-    
+
     constructor(props: any) {
         super(props);
         this.input = rangeInput(50);
@@ -35,7 +35,5 @@ export default class App extends Component<any, any> {
             ArrayContainer     ({ values: this.input.array() },                View({ name: 'array' })),
             ObservableContainer({ values: this.input.cold(), scheduler: RAF }, View({ name: 'cold RAF' })),
             ObservableContainer({ values: this.input.hot(),  scheduler: RAF }, View({ name: 'hot RAF' }))
-         // ObView({ name: 'cold timeout', values: this.input.cold(), scheduler: timeout }),
-         // ObView({ name: 'hot timeout',  values: this.input.hot(),  scheduler: timeout })
         )}
 };
