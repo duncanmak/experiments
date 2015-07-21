@@ -1,9 +1,7 @@
 import * as Rx from 'rx';
 
-let leftButtonClickedAction = new Rx.Subject();
-export let leftButtonClicked = (value: boolean) => leftButtonClickedAction.onNext(value);
-export let leftClicked$ = leftButtonClickedAction;
+export let leftClicked$  = new Rx.Subject();
+export let rightClicked$ = new Rx.Subject();
 
-let rightButtonClickedAction = new Rx.Subject();
-export let rightButtonClicked = (value: boolean) => rightButtonClickedAction.onNext(value);
-export let rightClicked$ = rightButtonClickedAction;
+export let leftButtonClicked  = (value: boolean) => leftClicked$.onNext(value);
+export let rightButtonClicked = (value: boolean) => rightClicked$.onNext(value);

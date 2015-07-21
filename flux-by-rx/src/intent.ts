@@ -1,12 +1,8 @@
 import { leftClicked$, rightClicked$ } from './buttonIntent';
 
-function intent() {
-  let actions = {
+const intent = () => ({
     leftClicked$,
     rightClicked$,
-  };
-
-  return actions;
-}
+})
 
 export default intent;

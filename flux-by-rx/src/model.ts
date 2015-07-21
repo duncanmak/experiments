@@ -7,9 +7,10 @@ function model(actions: any) {
     return Observable.combineLatest(
         leftClicked,
         rightClicked,
-        bothClicked,
-        (leftClicked, rightClicked) =>
-            ({ leftClicked, rightClicked })
+        (leftClicked, rightClicked) => {
+            let isDisabled = leftClicked == rightClicked;
+            return { leftClicked, rightClicked, isDisabled };
+        }
     );
 }
 
