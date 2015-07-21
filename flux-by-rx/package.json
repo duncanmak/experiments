@@ -1,0 +1,21 @@
+{
+  "name": "flux-by-rx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
+    "build": "rm -f dist/* && node node_modules/typescript/bin/tsc.js -p . && cp index.html dist/ && node node_modules/browserify/bin/cmd.js --debug dist/*.js > dist/bundle.js"
+  },
+  "author": "Duncan Mak <duncan.mak@xamarin.com>",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^0.13.3",
+    "rx": "^2.5.3"
+  },
+  "devDependencies": {
+    "browserify": "^11.0.0",
+    "tsd": "^0.6.3",
+    "typescript": "^1.5.3"
+  }
+}
