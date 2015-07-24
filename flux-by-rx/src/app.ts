@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DOM } from 'react';
-import { leftButtonClicked, rightButtonClicked } from './actions/button';
+import { leftButtonClicked, rightButtonClicked, makeItSoClicked } from './actions/button';
 import { pathChanged } from './actions/viewer';
 import { get } from 'lodash';
 
@@ -14,23 +14,19 @@ class Button extends React.Component<any, any> {
 
 class MakeItSo extends React.Component<any, any> {
 
-    onClick = () => {
-        leftButtonClicked(true);
-        rightButtonClicked(true);
-    }
-
     render = () => {
-        return DOM.button({ onClick: this.onClick, disabled: this.props.isDisabled }, "Make it so!");
+        return DOM.button({ onClick: () => makeItSoClicked(true), disabled: this.props.isDisabled }, "Make it so!");
     }
 }
 
 class Viewer extends React.Component<any, any> {
     render() {
-        let { data: { state } } = this.props;
+        let { data: { state, action } } = this.props;
 
         return DOM.div({},
             DOM.input({ type: 'text', defaultValue: '', onChange: (evt) => pathChanged((<any>evt.target).value) }),
-            JSON.stringify(get(state, state.path, state)));
+            DOM.div({}, "state " + JSON.stringify(get(state, state.path, state))),
+            DOM.div({}, "action " + JSON.stringify(action)));
     }
 }
 
