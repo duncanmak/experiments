@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DOM } from 'react';
-import { leftButtonClicked, rightButtonClicked } from './buttonIntent';
+import { leftButtonClicked, rightButtonClicked } from './actions/button';
 
 class Button extends React.Component<any, any> {
     onClick = () => this.props.handler(!this.props.value);

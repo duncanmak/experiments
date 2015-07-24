@@ -1,18 +1,19 @@
-import { Observable } from 'rx';
+import * as Rx from 'rx';
+import { Observable, Subject } from 'rx';
+import { clone, assign } from 'lodash';
+import { initialState } from './actions';
 
-function model(actions: any) {
-    let leftClicked = actions.leftClicked$.startWith(false);
-    let rightClicked = actions.rightClicked$.startWith(false);
+function model(actions$: Rx.Observable<any>) {
+    let state$ = new Subject();
+    let initial$ = state$.startWith(initialState);
+    actions$.subscribe(a => state$.onNext(a));
 
-    return Observable.combineLatest(
-        leftClicked,
-        rightClicked,
-        (leftClicked, rightClicked) => {
-            let isDisabled = leftClicked == rightClicked;
-            return { leftClicked, rightClicked, isDisabled };
-        }
-    );
+    return initial$.scan((actions, nextAction) => {
+        let { leftClicked, rightClicked }: any = assign({}, actions, nextAction);
+
+        let isDisabled = leftClicked == rightClicked == true;
+        return {isDisabled, leftClicked, rightClicked};
+    });
 }
-
 
 export default model;

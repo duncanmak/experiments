@@ -1,19 +1,19 @@
 import * as React from 'react';
 
-import intent from './intent';
+import { actions$, initialState } from './actions';
 import model  from './model';
 import view   from './view';
 
 function main() {
-  let actions = intent();
-  let state$  = model(actions);
-  let output$ = view(state$);
-
-  return output$;
+    let state$ = model(actions$);
+    let output$ = view(actions$, state$);
+    return output$;
 }
 
-main().subscribe((Output: any) =>
+main().subscribe((Output: any) => {
+    console.log("hello");
     React.render(
         Output,
-        document.getElementById('app')));
+        document.getElementById('app'));
+});
 

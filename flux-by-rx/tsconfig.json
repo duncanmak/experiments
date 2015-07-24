@@ -8,8 +8,8 @@
     },
     "files": [
         "src/app.ts",
-        "src/intent.ts",
-        "src/buttonIntent.ts",
+        "src/actions.ts",
+        "src/actions/button.ts",
         "src/main.ts",
         "src/model.ts",
         "src/view.ts",

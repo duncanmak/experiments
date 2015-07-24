@@ -13,6 +13,9 @@
     },
     "rx/rx.d.ts": {
       "commit": "99942cab1446292c79c4328218abd37621505112"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "977da240f263e88215a27cb44f2e31524ca07135"
     }
   }
 }
