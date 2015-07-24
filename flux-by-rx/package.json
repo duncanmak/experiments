@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
-    "build": "rm -f dist/* && node node_modules/typescript/bin/tsc.js -p . && cp index.html dist/ && node node_modules/browserify/bin/cmd.js --debug dist/*.js > dist/bundle.js"
+    "build": "rm -rf dist/* && node node_modules/typescript/bin/tsc.js -p . && cp index.html dist/ && node node_modules/browserify/bin/cmd.js --debug `find ./dist -name '*.js'` > dist/bundle.js"
   },
   "author": "Duncan Mak <duncan.mak@xamarin.com>",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^3.10.0",
     "react": "^0.13.3",
     "rx": "^2.5.3"
   },

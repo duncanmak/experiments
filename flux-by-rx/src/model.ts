@@ -9,10 +9,10 @@ function model(actions$: Rx.Observable<any>) {
     actions$.subscribe(a => state$.onNext(a));
 
     return initial$.scan((actions, nextAction) => {
-        let { leftClicked, rightClicked }: any = assign({}, actions, nextAction);
+        let {leftClicked, rightClicked, path}: any = assign({}, actions, nextAction);
 
         let isDisabled = leftClicked == rightClicked == true;
-        return {isDisabled, leftClicked, rightClicked};
+        return {isDisabled, leftClicked, rightClicked, path};
     });
 }
 
