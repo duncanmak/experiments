@@ -1,19 +1,16 @@
 import * as Rx from 'rx';
 import { Observable, Subject } from 'rx';
+import { Action } from './action';
 import { clone, assign } from 'lodash';
-import { initialState } from './actions';
 
-function model(actions$: Rx.Observable<any>) {
-    let state$ = new Subject();
-    let initial$ = state$.startWith(initialState);
-    actions$.subscribe(a => state$.onNext(a));
+export const initialState = {};
 
-    return initial$.scan((actions, nextAction) => {
-        let {leftClicked, rightClicked, path}: any = assign({}, actions, nextAction);
-
-        let isDisabled = leftClicked == rightClicked == true;
-        return {isDisabled, leftClicked, rightClicked, path};
-    });
+export function registerInitialState(state: any) {
+    assign(initialState, state);
 }
 
-export default model;
+export function model(action$: Rx.Observable<Action>, initialState: any) {
+    let state$ = new Subject();
+    action$.scan(initialState, (state: any, action: Action) => action.update(state)).subscribe(state$);
+    return state$.startWith(initialState);
+}
