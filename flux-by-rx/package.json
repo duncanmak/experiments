@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
-    "build": "rm -rf dist/* && node node_modules/typescript/bin/tsc.js -p . && cp index.html dist/ && node node_modules/browserify/bin/cmd.js --debug `find ./dist -name '*.js'` > dist/bundle.js"
+    "start": "node server.js"
   },
   "author": "Duncan Mak <duncan.mak@xamarin.com>",
   "license": "ISC",
@@ -16,24 +16,11 @@
     "rx": "^2.5.3"
   },
   "devDependencies": {
-    "browserify": "^11.0.0",
-    "colors": "^1.1.2",
-    "del": "^1.2.0",
-    "express": "^4.13.1",
-    "glob": "^5.0.14",
-    "gulp": "^3.9.0",
-    "gulp-concat-css": "^2.2.0",
-    "gulp-if": "^1.2.5",
-    "gulp-nodemon": "^2.0.3",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-typescript": "^2.8.0",
-    "gulp-util": "^3.0.6",
-    "livereactload": "^0.6.0",
-    "livereactload-api": "^0.5.1",
-    "livereload": "^0.3.7",
+    "react-hot-loader": "^1.2.8",
+    "ts-loader": "^0.4.7",
     "tsd": "^0.6.3",
     "typescript": "^1.5.3",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.3.0"
+    "webpack": "^1.10.5",
+    "webpack-dev-server": "^1.10.1"
   }
 }
