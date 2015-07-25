@@ -4,15 +4,25 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "target": "ES5",
-        "outDir": "dist"
+        "outDir": "js"
     },
     "files": [
-        "src/app.ts",
-        "src/actions.ts",
+        "src/action.ts",
         "src/actions/button.ts",
+        "src/actions/todo.ts",
+        "src/actions/viewer.ts",
+        "src/app.ts",
+        "src/buttons.ts",
         "src/main.ts",
         "src/model.ts",
         "src/view.ts",
+        "src/viewer.ts",
         "src/tsd.d.ts"
-    ]
+    ],
+
+    "html": [
+        "index.html"
+    ],
+
+    "css": []
 }
