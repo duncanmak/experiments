@@ -9,6 +9,7 @@
     "files": [
         "src/action.ts",
         "src/actions/button.ts",
+        "src/actions/clearActions.ts",
         "src/actions/todo.ts",
         "src/actions/viewer.ts",
         "src/app.ts",

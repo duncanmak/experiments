@@ -4,7 +4,7 @@ import { Action } from './action';
 import { Observable } from 'rx';
 import { identity } from 'lodash';
 
-function view(state$: Observable<any>, actions$: Observable<Action>) {
+function view(state$: Observable<any>, actions$: Observable<any>) {
     return Observable
         .combineLatest(
             state$,

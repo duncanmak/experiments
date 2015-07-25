@@ -3,6 +3,7 @@ import { DOM } from 'react';
 import { Viewer } from './viewer';
 import { Button, MakeItSo } from './buttons';
 import { todoAdded, todoRemoved } from './actions/todo';
+import { clearActions } from './actions/clearActions';
 import { get } from 'lodash';
 
 export class App extends React.Component<any, any> {
@@ -15,7 +16,7 @@ export class App extends React.Component<any, any> {
     }
 
     renderTodo(todo: string, key: number) {
-        return DOM.li({ key }, todo, DOM.button({ onClick: evt => todoRemoved(key) }, 'x'));
+        return DOM.li({ key, onClick: evt => todoRemoved(key) }, todo);
     }
 
     render() {
@@ -24,6 +25,7 @@ export class App extends React.Component<any, any> {
             DOM.h1({}, "To Do List"),
             React.createElement(Viewer, { data: this.props }),
             DOM.ul({}, this.props.state.todos.map(this.renderTodo)),
+            DOM.button({ onClick: evt => clearActions() }, "Clear Actions"),
             DOM.input({ type: 'text', defaultValue: 'Add todo', onKeyDown: this.handleKeyDown }));
     }
 }

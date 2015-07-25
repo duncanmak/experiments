@@ -4,18 +4,19 @@ import { assign } from 'lodash';
 import { List } from 'immutable';
 
 export let todoAdded = (text: string) => {
-    return action$.onNext(new AddTodoAction(text));
+    return action$.onNext(new AddTodo(text));
 }
 
 export let todoRemoved = (idx: number) => {
-    return action$.onNext(new RemoveTodoAction(idx));
+    return action$.onNext(new RemoveTodo(idx));
 }
 
-class AddTodoAction implements Action {
+export class AddTodo implements Action {
     constructor(private text: string) {}
 
     update(state: TodoState) {
-        return assign({}, state, { todos: state.todos.push(this.text) });
+        let value = this.text;
+        return assign({}, state, { todos: state.todos.push(value) });
     }
 
     toString() {
@@ -23,7 +24,7 @@ class AddTodoAction implements Action {
     }
 }
 
-class RemoveTodoAction implements Action {
+export class RemoveTodo implements Action {
     constructor(private idx: number) {}
 
     update(state: TodoState) {

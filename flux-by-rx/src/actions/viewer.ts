@@ -2,9 +2,9 @@ import { action$, Action } from '../action';
 import { registerInitialState } from '../model';
 import { assign } from 'lodash';
 
-export let pathChanged = (path: string) => action$.onNext(new PathChangedAction(path));
+export let pathChanged = (path: string) => action$.onNext(new PathChanged(path));
 
-class PathChangedAction implements Action {
+class PathChanged implements Action {
     constructor(private path: string) {}
 
     update(state: PathState) {

@@ -4,3 +4,5 @@
 /// <reference path="../typings/rx/rx.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../node_modules/immutable/dist/immutable.d.ts" />
+/// <reference path="../typings/rx/rx.binding-lite.d.ts" />
+/// <reference path="../typings/rx/rx.binding.d.ts" />

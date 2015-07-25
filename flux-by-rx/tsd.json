@@ -19,6 +19,12 @@
     },
     "node/node.d.ts": {
       "commit": "178dee76b23618d84237e9601cf21772252883cc"
+    },
+    "rx/rx.binding-lite.d.ts": {
+      "commit": "f6c8ca47193fb67947944a3170912672ac3e908e"
+    },
+    "rx/rx.binding.d.ts": {
+      "commit": "f6c8ca47193fb67947944a3170912672ac3e908e"
     }
   }
 }
