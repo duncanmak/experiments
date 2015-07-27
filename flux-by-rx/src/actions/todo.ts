@@ -15,6 +15,7 @@ export class AddTodo implements Action {
     constructor(private text: string) {}
 
     value() { return this.text; }
+
     update(state: TodoState) {
         return assign({}, state, { todos: state.todos.push(this.value()) });
     }

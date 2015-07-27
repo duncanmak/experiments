@@ -6,7 +6,7 @@ import view from './view';
 
 function run() {
     console.log("Running");
-    let playback$ = action$.scan([], (actions, a) => [...actions, a]);
+    let playback$ = action$; //.scan([], (actions, a) => [...actions, a]);
     let state$ = model(playback$, initialState);
 
     let output$ = view(state$, playback$);

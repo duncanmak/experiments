@@ -9,10 +9,11 @@ export function registerInitialState(state: any) {
     assign(initialState, state);
 }
 
-export function model(action$: Rx.Observable<Action[]>, initialState: any) {
+export function model(action$: Rx.Observable<Action>, initialState: any) {
     let state$ = new Subject();
     action$
-        .scan(initialState, (state: any, actions: Action[]) => actions.reduce((s, action) => action.update(s), state))
+        //.scan(initialState, (state: any, actions: Action[]) => actions.reduce((s, action) => action.update(s), state))
+        .scan(initialState, (s, action) => action.update(s))
         .subscribe(state$);
     return state$.startWith(initialState);
 }
