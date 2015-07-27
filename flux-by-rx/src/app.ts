@@ -17,14 +17,14 @@ export class App extends React.Component<any, any> {
     renderTodo(todo: string, key: number) {
         return DOM.div(
             {},
-            DOM.li({ key }, todo, DOM.button({ onClick: evt => todoRemoved(key) }, 'o'))
+            DOM.li({ key, onClick: evt => todoRemoved(key) }, todo)
             )
     }
 
     render() {
         let { state, action } = this.props;
         return DOM.div({},
-            DOM.h1({}, "To Do List in Spanish"),
+            DOM.h1({}, "To Do List"),
             React.createElement(Viewer, { data: this.props }),
             DOM.ul({}, this.props.state.todos.map(this.renderTodo)),
             DOM.input({ type: 'text', defaultValue: 'Add todo', onKeyDown: this.handleKeyDown })

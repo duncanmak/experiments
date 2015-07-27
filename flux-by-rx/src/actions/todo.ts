@@ -14,12 +14,14 @@ export let todoRemoved = (idx: number) => {
 class AddTodoAction implements Action {
     constructor(private text: string) {}
 
+    value () { return this.text.toUpperCase(); }
+
     update(state: TodoState) {
-        return assign({}, state, { todos: state.todos.push(this.text) });
+        return assign({}, state, { todos: state.todos.push(this.value()) });
     }
 
     toString() {
-        return JSON.stringify({ Add: this.text });
+        return JSON.stringify({ Add: this.value() });
     }
 }
 
