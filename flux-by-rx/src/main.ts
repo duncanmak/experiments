@@ -2,7 +2,7 @@ import * as React from 'react';
 import { action$, Action } from './action';
 import { ClearActions } from './actions/clearActions';
 import * as Rx from 'rx';
-import { Observable, ReplaySubject } from 'rx';
+import { Observable } from 'rx';
 import { model, initialState } from './model';
 import view from './view';
 
@@ -25,7 +25,11 @@ function run() {
     let state$ = model(replay$, initialState);
 
     let playback$ = replay$.scan([], (actions, a) => {
-        return (a instanceof ClearActions) ? [] : <Action []>[...actions, a]
+        if (a instanceof ClearActions) {
+            return [];
+        }
+        console.log('Playback', a.toString());
+        return <Action[]>[...actions, a]
     });
 
     let output$ = view(state$, playback$);
