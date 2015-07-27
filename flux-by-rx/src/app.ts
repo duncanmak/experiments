@@ -6,6 +6,12 @@ import { todoAdded, todoRemoved } from './actions/todo';
 import { clearActions } from './actions/clearActions';
 import { get } from 'lodash';
 
+export class HelloComponent extends React.Component<any, any> {
+    render() {
+        return DOM.h1({}, this.props.children);
+    }
+}
+
 export class App extends React.Component<any, any> {
 
     handleKeyDown(evt: React.KeyboardEvent) {
@@ -21,8 +27,12 @@ export class App extends React.Component<any, any> {
 
     render() {
         let { state, action } = this.props;
+        const Hello = React.createFactory(HelloComponent);
         return DOM.div({},
-            DOM.h1({}, "To Do List"),
+            Hello({}, "Connor"),
+            Hello({}, "Duncan"),
+            Hello({}, "Matt"),
+            Hello({}, "Joseph"),
             React.createElement(Viewer, { data: this.props }),
             DOM.ul({}, this.props.state.todos.map(this.renderTodo)),
             DOM.button({ onClick: evt => clearActions() }, "Clear Actions"),
