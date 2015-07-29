@@ -7,7 +7,10 @@
         "outDir": "dist"
     },
     "files": [
+        "src/containers.ts",
         "src/main.ts",
+        "src/numbers.ts",
+        "src/retrieve.ts",
         "src/views.ts",
         "src/tsd.d.ts"
     ]
