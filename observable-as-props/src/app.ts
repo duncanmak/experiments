@@ -69,22 +69,26 @@ export default class App extends Component<any, any> {
 
     renderConcurrently() {
         let scheduler = RxDOM.Scheduler.requestAnimationFrame;
+        let timeout = Rx.Scheduler.timeout;
 
         function oddEven(o: Observable<number>) {
-            let odd = o.filter((n: number) => (n % 2 != 0));
-            let even = o.filter((n: number) => (n % 2 == 0));
-            return { odd, even };
+            let odd = o.filter((n: number) => (n % 2) != 0);
+            let even = o.filter((n: number) => (n % 2) == 0);
+            let thirds = o.filter((n: number) => (n % 3) == 0);
+            return { odd, even, thirds };
         }
 
         let array = this.input.array(), cold = this.input.cold(), hot = this.input.hot();
+        let num = <Observable<number>>retrieve(numbers('http://localhost:8080/numbers'));
 
         let arrayC = makeArrayContainer({ data: array }, List({ name: 'array' }));
         let coldC = makeSingleObservableContainer({ data: cold, scheduler }, List({ name: 'cold RAF' }));
         let hotC = makeSingleObservableContainer({ data: hot, scheduler }, List({ name: 'hot RAF' }));
-        let multC = makeMultipleObservablesContainer({ data: oddEven(hot), scheduler },
+        let multC = makeMultipleObservablesContainer({ data: oddEven(num), scheduler: timeout },
             List({ name: 'Odd numbers', ref: 'odd' }),
-            List({ name: 'Even numbers', ref: 'even' }));
+            List({ name: 'Even numbers', ref: 'even' }),
+            List({ name: 'Thirds',       ref: 'thirds'}));
 
-        return DOM.div({}, arrayC, coldC, hotC, multC);
+        return DOM.div({}, coldC, hotC, multC);
     }
 }
