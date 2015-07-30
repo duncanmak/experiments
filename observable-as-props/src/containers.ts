@@ -2,51 +2,65 @@ import * as React from 'react';
 import { Component, DOM, createFactory, Children, cloneElement } from 'react';
 import { Observable } from 'rx';
 
-export interface Values {
-    values: number[];
+export interface Values<T> {
+    data: T[];
 }
 
-class ContainerComponent<P extends React.Props<any>, S> extends React.Component<P, S> {
+class ArrayContainerComponent<T> extends React.Component<Values<T>, any> {
+    render() {
+        let children = (<React.Props<any>>this.props).children;
 
-    shouldComponentUpdate(nextProps: P, nextState: S) {
-        return this.props != nextProps || this.state != nextState;
+        let child = <React.ReactElement<any>> Children.only(children);
+        return cloneElement(child, this.props);
+    }
+}
+export const ArrayContainer = createFactory(ArrayContainerComponent);
+
+interface SingleObservableProps<T> extends React.Props<any> {
+    data: Observable<T>;
+    scheduler: Rx.Scheduler;
+}
+
+class SingleObservableContainerComponent<T> extends React.Component<SingleObservableProps<T>, Values<T>> {
+    constructor(props: SingleObservableProps<T>) {
+        super(props);
+        this.state = { data: [] };
+    }
+
+    componentDidMount() {
+        this.props.data
+            .bufferWithTime(20) // TODO: Replace this with a rAF timer?
+            .observeOn(this.props.scheduler)
+            .subscribe(i => {
+                this.setState({ data: this.state.data.concat(i) });
+            });
     }
 
     render() {
         let child = <React.ReactElement<any>> Children.only(this.props.children);
-        return cloneElement(child, this.values());
-    }
-
-    /* abstract */ values(): Values {
-        return undefined;
+        return cloneElement(child, this.state);
     }
 }
 
-class ArrayContainerComponent extends ContainerComponent<Values, any> {
-    values() { return this.props; }
-}
-export const ArrayContainer = createFactory(ArrayContainerComponent);
+export const SingleObservableContainer = createFactory(SingleObservableContainerComponent);
 
-interface ObservableValues extends React.Props<any> {
-    values: Observable<number>;
+interface MultipleObservablesProps<T> extends React.Props<any> {
+    data: { [ref: string]: Observable<T> };
     scheduler: Rx.Scheduler;
 }
 
-class ObservableContainerComponent extends ContainerComponent<ObservableValues, Values> {
-    constructor(props: any) {
-        super(props);
-        this.state = { values: [] };
-    }
-
-    componentDidMount() {
-        this.props.values
-            .bufferWithTime(20) // TODO: Replace this with a rAF timer?
-            .observeOn(this.props.scheduler)
-            .subscribe(i => {
-                this.setState({ values: this.state.values.concat(i) });
+class MultipleObservablesContainerComponent<T> extends React.Component<MultipleObservablesProps<T>, any> {
+    render() {
+        let scheduler = this.props.scheduler;
+        let body = Children.map(
+            this.props.children,
+            (child: React.ReactElement<any>) => {
+                let data = this.props.data[<string>child.ref];
+                return SingleObservableContainer({ data, scheduler }, child);
             });
-    }
 
-    values() { return this.state; }
+        return DOM.div({}, body);
+    }
 }
-export const ObservableContainer = createFactory(ObservableContainerComponent);
+
+export const MultipleObservablesContainer = createFactory(MultipleObservablesContainerComponent);

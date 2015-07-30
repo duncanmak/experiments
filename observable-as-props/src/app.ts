@@ -1,7 +1,7 @@
 import { Component, DOM } from 'react';
 import { Observable, Scheduler } from 'rx';
 import { range } from 'lodash';
-import { ArrayContainer, ObservableContainer } from './containers';
+import { ArrayContainer, ObservableContainer, MultipleObservablesContainer } from './containers';
 import { List, Grid } from './views';
 import { Options } from 'request';
 import { retrieve } from './retrieve';
@@ -35,11 +35,12 @@ export default class App extends Component<any, any> {
 
     constructor(props: any) {
         super(props);
-        this.input = rangeInput(50);
+        this.input = rangeInput(100);
     }
 
     render() {
-        return this.renderGrid();
+        // return this.renderList();
+        return this.renderConcurrently();
     }
 
     renderList() {
@@ -47,18 +48,39 @@ export default class App extends Component<any, any> {
 
         return DOM.div(
             {},
-            ArrayContainer({ values: this.input.array() }, List({ name: 'array' })),
-            ObservableContainer({ values: this.input.cold(), scheduler }, List({ name: 'cold RAF' })),
-            ObservableContainer({ values: this.input.hot(), scheduler }, List({ name: 'hot RAF' })))
+            ArrayContainer({ data: this.input.array() }, List({ name: 'array' })),
+            ObservableContainer({ data: this.input.cold(), scheduler }, List({ name: 'cold RAF' })),
+            ObservableContainer({ data: this.input.hot(), scheduler }, List({ name: 'hot RAF' })));
     }
 
     renderGrid() {
         let scheduler = RxDOM.Scheduler.requestAnimationFrame;
         let timeout = Scheduler.timeout;
-        let values = retrieve(numbers('http://localhost:8080/numbers'));
+        let data = retrieve(numbers('http://localhost:8080/numbers'));
 
         return DOM.div(
             {},
-            ObservableContainer({ values, scheduler }, Grid({ name: 'hot RAF!' })));
+            ObservableContainer({ data, scheduler }, Grid({ name: 'hot RAF!' })));
+    }
+
+    renderConcurrently() {
+        let scheduler = RxDOM.Scheduler.requestAnimationFrame;
+
+        function oddEven(o: Observable<number>) {
+            let odd = o.filter((n: number) => (n % 2 != 0));
+            let even = o.filter((n: number) => (n % 2 == 0));
+            return { odd, even };
+        }
+
+        let array = this.input.array(), cold = this.input.cold(), hot = this.input.hot();
+
+        let arrayC = ArrayContainer({ data: array }, List({ name: 'array' }));
+        let coldC = ObservableContainer({ data: cold, scheduler }, List({ name: 'cold RAF' }));
+        let hotC = ObservableContainer({ data: hot, scheduler }, List({ name: 'hot RAF' }));
+        let multC = MultipleObservablesContainer({ data: oddEven(hot), scheduler },
+            List({ name: 'Odd numbers', ref: 'odd' }),
+            List({ name: 'Even numbers', ref: 'even' }));
+
+        return DOM.div({}, arrayC, coldC, hotC, multC);
     }
 }

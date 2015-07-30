@@ -3,7 +3,7 @@ import { createFactory, DOM } from 'react';
 
 interface Props extends React.Props<any> {
     name: string;
-    values?: number[]; // optional because of usage in app.ts
+    data?: number[]; // optional because of usage in app.ts
 }
 
 class ListComponent extends React.Component<Props, any> {
@@ -14,12 +14,12 @@ class ListComponent extends React.Component<Props, any> {
             return `${d.getSeconds() }s ${d.getMilliseconds() }ms`;
         };
 
-        console.log(time(), 'render', this.props.name, this.props.values.length);
+        console.log(time(), 'render', this.props.name, this.props.data.length);
 
         return DOM.ul(
             { style: { float: 'left' } },
             DOM.div({}, this.props.name),
-            this.props.values.map((v: number) => DOM.li({ key: v }, v)));
+            this.props.data.map((v: number) => DOM.li({ key: v }, v)));
     }
 }
 export const List = createFactory(ListComponent);
@@ -55,7 +55,7 @@ class GridComponent extends React.Component<Props, any> {
             return `${d.getSeconds() }s ${d.getMilliseconds() }ms`;
         };
 
-        console.log(time(), 'render', this.props.name, this.props.values.length);
+        console.log(time(), 'render', this.props.name, this.props.data.length);
 
         let style = {
             float: 'left',
@@ -79,7 +79,7 @@ class GridComponent extends React.Component<Props, any> {
                 width: this.width * this.column + this.column,
                 style: { float: 'left' }
             },
-                this.props.values.map((v: number) => this.box(v)//DOM.li({ key: v }, v)
+                this.props.data.map((v: number) => this.box(v)//DOM.li({ key: v }, v)
         )));
     }
 }
