@@ -1,12 +1,16 @@
-import { Component, DOM } from 'react';
+import { Component, DOM, createFactory } from 'react';
 import { Observable, Scheduler } from 'rx';
 import { range } from 'lodash';
-import { ArrayContainer, ObservableContainer, MultipleObservablesContainer } from './containers';
+import { ArrayContainer, SingleObservableContainer, MultipleObservablesContainer } from './containers';
 import { List, Grid } from './views';
 import { Options } from 'request';
 import { retrieve } from './retrieve';
 
 const RxDOM = require('rx-dom');
+
+var makeArrayContainer = createFactory(ArrayContainer);
+var makeMultipleObservablesContainer = createFactory(MultipleObservablesContainer);
+var makeSingleObservableContainer = createFactory(SingleObservableContainer);
 
 interface Input {
     array(): number[];
@@ -48,9 +52,9 @@ export default class App extends Component<any, any> {
 
         return DOM.div(
             {},
-            ArrayContainer({ data: this.input.array() }, List({ name: 'array' })),
-            ObservableContainer({ data: this.input.cold(), scheduler }, List({ name: 'cold RAF' })),
-            ObservableContainer({ data: this.input.hot(), scheduler }, List({ name: 'hot RAF' })));
+            makeArrayContainer({ data: this.input.array() }, List({ name: 'array' })),
+            makeSingleObservableContainer({ data: this.input.cold(), scheduler }, List({ name: 'cold RAF' })),
+            makeSingleObservableContainer({ data: this.input.hot(), scheduler }, List({ name: 'hot RAF' })));
     }
 
     renderGrid() {
@@ -60,7 +64,7 @@ export default class App extends Component<any, any> {
 
         return DOM.div(
             {},
-            ObservableContainer({ data, scheduler }, Grid({ name: 'hot RAF!' })));
+            makeSingleObservableContainer({ data, scheduler }, Grid({ name: 'hot RAF!' })));
     }
 
     renderConcurrently() {
@@ -74,10 +78,10 @@ export default class App extends Component<any, any> {
 
         let array = this.input.array(), cold = this.input.cold(), hot = this.input.hot();
 
-        let arrayC = ArrayContainer({ data: array }, List({ name: 'array' }));
-        let coldC = ObservableContainer({ data: cold, scheduler }, List({ name: 'cold RAF' }));
-        let hotC = ObservableContainer({ data: hot, scheduler }, List({ name: 'hot RAF' }));
-        let multC = MultipleObservablesContainer({ data: oddEven(hot), scheduler },
+        let arrayC = makeArrayContainer({ data: array }, List({ name: 'array' }));
+        let coldC = makeSingleObservableContainer({ data: cold, scheduler }, List({ name: 'cold RAF' }));
+        let hotC = makeSingleObservableContainer({ data: hot, scheduler }, List({ name: 'hot RAF' }));
+        let multC = makeMultipleObservablesContainer({ data: oddEven(hot), scheduler },
             List({ name: 'Odd numbers', ref: 'odd' }),
             List({ name: 'Even numbers', ref: 'even' }));
 

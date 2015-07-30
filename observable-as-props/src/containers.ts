@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { Component, DOM, createFactory, Children, cloneElement } from 'react';
+import { Component, DOM, createFactory, Children, cloneElement, createElement } from 'react';
 import { Observable } from 'rx';
 
-export interface Values<T> {
-    data: T[];
-}
+export interface Data<T> { data: T[]; }
 
-class ArrayContainerComponent<T> extends React.Component<Values<T>, any> {
+export class ArrayContainer<T> extends React.Component<Data<T>, any> {
     render() {
         let children = (<React.Props<any>>this.props).children;
 
@@ -14,14 +12,13 @@ class ArrayContainerComponent<T> extends React.Component<Values<T>, any> {
         return cloneElement(child, this.props);
     }
 }
-export const ArrayContainer = createFactory(ArrayContainerComponent);
 
 interface SingleObservableProps<T> extends React.Props<any> {
     data: Observable<T>;
     scheduler: Rx.Scheduler;
 }
 
-class SingleObservableContainerComponent<T> extends React.Component<SingleObservableProps<T>, Values<T>> {
+export class SingleObservableContainer<T> extends React.Component<SingleObservableProps<T>, Data<T>> {
     constructor(props: SingleObservableProps<T>) {
         super(props);
         this.state = { data: [] };
@@ -42,25 +39,22 @@ class SingleObservableContainerComponent<T> extends React.Component<SingleObserv
     }
 }
 
-export const SingleObservableContainer = createFactory(SingleObservableContainerComponent);
-
 interface MultipleObservablesProps<T> extends React.Props<any> {
     data: { [ref: string]: Observable<T> };
     scheduler: Rx.Scheduler;
 }
 
-class MultipleObservablesContainerComponent<T> extends React.Component<MultipleObservablesProps<T>, any> {
+export class MultipleObservablesContainer<T> extends React.Component<MultipleObservablesProps<T>, any> {
     render() {
         let scheduler = this.props.scheduler;
         let body = Children.map(
             this.props.children,
             (child: React.ReactElement<any>) => {
                 let data = this.props.data[<string>child.ref];
-                return SingleObservableContainer({ data, scheduler }, child);
+                return createElement(SingleObservableContainer, { data, scheduler }, child);
             });
 
         return DOM.div({}, body);
     }
 }
 
-export const MultipleObservablesContainer = createFactory(MultipleObservablesContainerComponent);
