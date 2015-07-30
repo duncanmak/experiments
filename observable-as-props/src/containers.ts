@@ -57,4 +57,3 @@ export class MultipleObservablesContainer<T> extends React.Component<MultipleObs
         return DOM.div({}, body);
     }
 }
-

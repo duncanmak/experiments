@@ -8,9 +8,9 @@ import { retrieve } from './retrieve';
 
 const RxDOM = require('rx-dom');
 
-var makeArrayContainer = createFactory(ArrayContainer);
-var makeMultipleObservablesContainer = createFactory(MultipleObservablesContainer);
-var makeSingleObservableContainer = createFactory(SingleObservableContainer);
+const makeArrayContainer = createFactory(ArrayContainer);
+const makeMultipleObservablesContainer = createFactory(MultipleObservablesContainer);
+const makeSingleObservableContainer = createFactory(SingleObservableContainer);
 
 interface Input {
     array(): number[];
