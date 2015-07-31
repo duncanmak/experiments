@@ -5,17 +5,22 @@
   "main": "index.js",
   "scripts": {
     "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
-    "build": "rm -f dist/* && node node_modules/typescript/bin/tsc.js -p . && cp index.html dist/ && node node_modules/browserify/bin/cmd.js --debug dist/*.js > dist/bundle.js"
+    "start": "node server.js"
   },
   "author": "Duncan Mak <duncan.mak@xamarin.com>",
   "license": "ISC",
   "dependencies": {
+    "immutable": "^3.7.4",
+    "lodash": "^3.10.0",
     "react": "^0.13.3",
     "rx": "^2.5.3"
   },
   "devDependencies": {
-    "browserify": "^11.0.0",
+    "react-hot-loader": "^1.2.8",
+    "ts-loader": "^0.4.7",
     "tsd": "^0.6.3",
-    "typescript": "^1.5.3"
+    "typescript": "^1.5.3",
+    "webpack": "^1.10.5",
+    "webpack-dev-server": "^1.10.1"
   }
 }

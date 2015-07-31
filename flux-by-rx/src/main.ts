@@ -1,19 +1,20 @@
 import * as React from 'react';
+import { action$ } from './action';
+import { Observable } from 'rx';
+import { model, initialState } from './model';
+import view from './view';
 
-import intent from './intent';
-import model  from './model';
-import view   from './view';
+function run() {
+    console.log("Running");
+    let playback$ = action$; //.scan([], (actions, a) => [...actions, a]);
+    let state$ = model(playback$, initialState);
 
-function main() {
-  let actions = intent();
-  let state$  = model(actions);
-  let output$ = view(state$);
-
-  return output$;
+    let output$ = view(state$, playback$);
+    output$.subscribe((comp) => {
+        React.render(
+            comp,
+            document.getElementById('app'))
+    });
 }
 
-main().subscribe((Output: any) =>
-    React.render(
-        Output,
-        document.getElementById('app')));
-
+window.onload = run;
