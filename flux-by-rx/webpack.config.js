@@ -21,10 +21,15 @@ module.exports = {
     extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
   },
   module: {
-    loaders: [{
-      test: /\.ts?$/,
-      loaders: ['react-hot', 'ts'],
-      include: path.join(__dirname, 'src')
-    }]
+        loaders: [
+            { test: /\.ts?$/,  loaders: ['react-hot', 'ts'], include: path.join(__dirname, 'src') },
+            { test: /\.json$/, loaders: ['json-loader'] }
+        ]
+  },
+  node: {
+      console: true,
+      fs: 'empty',
+      net: 'empty',
+      tls: 'empty'
   }
 };

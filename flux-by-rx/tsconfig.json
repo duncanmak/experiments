@@ -13,11 +13,14 @@
         "src/actions/todo.ts",
         "src/actions/viewer.ts",
         "src/app.ts",
+        "src/retrieve.ts",
         "src/buttons.ts",
         "src/main.ts",
         "src/model.ts",
         "src/view.ts",
-        "src/viewer.ts",
+        "src/views/viewer.ts",
+        "src/views/containers.ts",
+        "src/views/github-events.ts",
         "src/tsd.d.ts"
     ],
 

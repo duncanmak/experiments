@@ -3,14 +3,14 @@ import { action$ } from './action';
 import { Observable } from 'rx';
 import { model, initialState } from './model';
 import view from './view';
+import { retrieve } from './retrieve';
 
 function run() {
     console.log("Running");
-    let playback$ = action$; //.scan([], (actions, a) => [...actions, a]);
-    let state$ = model(playback$, initialState);
+    let state$    = model(action$, initialState);
 
-    let output$ = view(state$, playback$);
-    output$.subscribe((comp) => {
+    let output$ = view(state$, action$);
+    output$.subscribe((comp: React.ReactElement<any>) => {
         React.render(
             comp,
             document.getElementById('app'))
