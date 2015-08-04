@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component, DOM, createFactory, Children, cloneElement, createElement } from 'react';
 import { Observable } from 'rx';
+import * as Rx from 'rx';
 
 export interface Data<T> { data: T[]; }
 
@@ -10,13 +11,32 @@ interface SingleObservableProps<T> extends React.Props<any> {
 }
 
 export class SingleObservableContainer<T> extends React.Component<SingleObservableProps<T>, Data<T>> {
+
+    subscription: Rx.IDisposable;
+
     constructor(props: SingleObservableProps<T>) {
         super(props);
         this.state = { data: [] };
     }
 
     componentDidMount() {
-        this.props.data
+        this.subscribe(this.props.data);
+    }
+
+    componentWillReceiveProps(newProps: SingleObservableProps<T>) {
+        if (newProps !== this.props) {
+            this.subscription.dispose();
+            this.setState({ data: [] });
+            this.subscribe(newProps.data);
+        }
+    }
+
+    componentWillUnmount() {
+        this.subscription.dispose();
+    }
+
+    subscribe(data: Observable<T>) {
+        this.subscription = data
             .bufferWithTime(20) // TODO: Replace this with a rAF timer?
             .observeOn(this.props.scheduler)
             .subscribe(i => {

@@ -9,8 +9,7 @@ function generic(url: string): Options {
     };
 }
 
-export function github(...parts: string[]): Options {
-    const token = '0a567c9eff0786125472ff108082763d6b9b92d3';
+export function github(token: string, ...parts: string[]): Options {
     return {
         withCredentials: false,
         uri: 'https://api.github.com/' + parts.join("/"),
@@ -18,4 +17,4 @@ export function github(...parts: string[]): Options {
     };
 }
 
-export let github$ = retrieve(generic('http://localhost:8080/is-authorized'), ['github']);
+export let github$ = retrieve(generic('http://localhost:3000/is-authorized.json'), ['github']);

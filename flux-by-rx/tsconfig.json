@@ -4,12 +4,14 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "target": "ES5",
-        "outDir": "js"
+        "outDir": "js",
+        "noLib": true
     },
     "files": [
         "src/action.ts",
         "src/actions/button.ts",
         "src/actions/clearActions.ts",
+        "src/actions/filterEvent.ts",
         "src/actions/todo.ts",
         "src/actions/viewer.ts",
         "src/app.ts",

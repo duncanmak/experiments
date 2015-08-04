@@ -42,4 +42,4 @@ interface TodoState {
 }
 
 
-registerInitialState({ todos: List() });
+// registerInitialState({ todos: List() });

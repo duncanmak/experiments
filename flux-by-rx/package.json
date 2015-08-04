@@ -1,42 +1,43 @@
 {
-  "name": "flux-by-rx",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
-    "start": "node server.js"
-  },
-  "author": "Duncan Mak <duncan.mak@xamarin.com>",
-    "contributors": [
-    {
-      "name": "Duncan Mak",
-      "email": "duncan@a-chinaman.com"
+    "name": "flux-by-rx",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "init": "npm update && node node_modules/tsd/build/cli.js reinstall",
+        "start": "node server.js"
     },
-    {
-      "name": "Matthew Sylvia",
-      "email": "msylvia@nukefile.net"
+    "author": "Duncan Mak <duncan.mak@xamarin.com>",
+    "contributors": [
+        {
+            "name": "Duncan Mak",
+            "email": "duncan@a-chinaman.com"
+        },
+        {
+            "name": "Matthew Sylvia",
+            "email": "msylvia@nukefile.net"
+        }
+    ],
+    "license": "ISC",
+    "dependencies": {
+        "JSONStream": "^1.0.4",
+        "core-js": "^1.0.1",
+        "immutable": "^3.7.4",
+        "lodash": "^3.10.0",
+        "node": "0.0.0",
+        "parse-link-header": "^0.3.0",
+        "react": "^0.13.3",
+        "request": "^2.60.0",
+        "rx": "^2.5.3",
+        "rx-dom": "^6.0.0"
+    },
+    "devDependencies": {
+        "json-loader": "^0.5.2",
+        "react-hot-loader": "^1.2.8",
+        "ts-loader": "^0.4.7",
+        "tsd": "^0.6.3",
+        "typescript": "^1.5.3",
+        "webpack": "^1.10.5",
+        "webpack-dev-server": "^1.10.1"
     }
-  ],
-  "license": "ISC",
-  "dependencies": {
-    "JSONStream": "^1.0.4",
-    "immutable": "^3.7.4",
-    "lodash": "^3.10.0",
-    "node": "0.0.0",
-    "parse-link-header": "^0.3.0",
-    "react": "^0.13.3",
-    "request": "^2.60.0",
-    "rx": "^2.5.3",
-    "rx-dom": "^6.0.0"
-  },
-  "devDependencies": {
-    "json-loader": "^0.5.2",
-    "react-hot-loader": "^1.2.8",
-    "ts-loader": "^0.4.7",
-    "tsd": "^0.6.3",
-    "typescript": "^1.5.3",
-    "webpack": "^1.10.5",
-    "webpack-dev-server": "^1.10.1"
-  }
 }

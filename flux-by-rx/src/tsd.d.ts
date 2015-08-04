@@ -1,3 +1,4 @@
+/// <reference path="../node_modules/typescript/bin/lib.es6.d.ts" />
 /// <reference path="../typings/lodash/lodash.d.ts" />
 /// <reference path="../typings/react/react.d.ts" />
 /// <reference path="../typings/rx/rx-lite.d.ts" />
