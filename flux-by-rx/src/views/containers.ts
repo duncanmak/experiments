@@ -35,6 +35,10 @@ export class SingleObservableContainer<T> extends React.Component<SingleObservab
         this.subscription.dispose();
     }
 
+    shouldComponentUpdate(nextProps: SingleObservableProps<T>, newState: Data<T>) {
+        return newState.data.length > 0;
+    }
+
     subscribe(data: Observable<T>) {
         this.subscription = data
             .bufferWithTime(20) // TODO: Replace this with a rAF timer?
