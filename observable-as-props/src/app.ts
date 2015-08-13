@@ -43,8 +43,8 @@ export default class App extends Component<any, any> {
     }
 
     render() {
-        // return this.renderList();
-        return this.renderConcurrently();
+        return this.renderList();
+        // return this.renderConcurrently();
     }
 
     renderList() {
@@ -53,8 +53,9 @@ export default class App extends Component<any, any> {
         return DOM.div(
             {},
             makeArrayContainer({ data: this.input.array() }, List({ name: 'array' })),
-            makeSingleObservableContainer({ data: this.input.cold(), scheduler }, List({ name: 'cold RAF' })),
-            makeSingleObservableContainer({ data: this.input.hot(), scheduler }, List({ name: 'hot RAF' })));
+            makeSingleObservableContainer({ data: this.input.cold(), scheduler }, List({ name: 'cold RAF' }))
+            // makeSingleObservableContainer({ data: this.input.hot(), scheduler }, List({ name: 'hot RAF' }))
+            );
     }
 
     renderGrid() {

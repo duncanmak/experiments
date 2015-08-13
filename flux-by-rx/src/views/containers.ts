@@ -19,7 +19,7 @@ export class SingleObservableContainer<T> extends React.Component<SingleObservab
         this.state = { data: [] };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.subscribe(this.props.data);
     }
 

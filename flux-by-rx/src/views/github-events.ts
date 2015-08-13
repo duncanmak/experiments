@@ -3,7 +3,7 @@ import { DOM } from 'react';
 
 export class GitHubEvents extends React.Component<any, any> {
     render() {
-        let style = { float: 'left' };
+        let style = { float: 'left', width: '500px' };
         let { state } = this.props;
 
         return DOM.div(

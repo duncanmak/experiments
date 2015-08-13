@@ -24,7 +24,7 @@ export class SingleObservableContainer<T> extends React.Component<SingleObservab
         this.state = { data: [] };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.data
             .bufferWithTime(20) // TODO: Replace this with a rAF timer?
             .observeOn(this.props.scheduler)
