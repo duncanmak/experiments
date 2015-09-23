@@ -1,0 +1,45 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "src/tsd.d.ts",
+  "installed": {
+    "react/react.d.ts": {
+      "commit": "99942cab1446292c79c4328218abd37621505112"
+    },
+    "rx/rx-lite.d.ts": {
+      "commit": "99942cab1446292c79c4328218abd37621505112"
+    },
+    "rx/rx.d.ts": {
+      "commit": "99942cab1446292c79c4328218abd37621505112"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "977da240f263e88215a27cb44f2e31524ca07135"
+    },
+    "node/node.d.ts": {
+      "commit": "178dee76b23618d84237e9601cf21772252883cc"
+    },
+    "rx/rx.binding-lite.d.ts": {
+      "commit": "f6c8ca47193fb67947944a3170912672ac3e908e"
+    },
+    "rx/rx.binding.d.ts": {
+      "commit": "f6c8ca47193fb67947944a3170912672ac3e908e"
+    },
+    "request/request.d.ts": {
+      "commit": "7c27233ae47768442b9b0a40d7f03fadf593fad2"
+    },
+    "form-data/form-data.d.ts": {
+      "commit": "7c27233ae47768442b9b0a40d7f03fadf593fad2"
+    },
+    "JSONStream/JSONStream.d.ts": {
+      "commit": "7c27233ae47768442b9b0a40d7f03fadf593fad2"
+    },
+    "rx/rx.time.d.ts": {
+      "commit": "7c27233ae47768442b9b0a40d7f03fadf593fad2"
+    },
+    "rx/rx.time-lite.d.ts": {
+      "commit": "7c27233ae47768442b9b0a40d7f03fadf593fad2"
+    }
+  }
+}
