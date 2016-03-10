@@ -1,5 +1,3 @@
-import { find, matchesProperty, merge, some } from 'lodash'
-
 interface Change { path: string; content: string }
 
 class GitHubHelper {
@@ -30,11 +28,13 @@ class GitHubHelper {
         let ref = `refs/heads/${this.branch}`;
         let refs = await (await fetch(url)).json();
 
+        const has = (prop, value) => (obj) => obj[prop] === value;
+
         // TODO: find(refs, ['ref', 'refs/heads/master']) should work
-        let master: any = find(refs, matchesProperty('ref', 'refs/heads/master'));
+        const master: any = refs.find(has('ref', 'refs/heads/master'));
 
         // TODO: some(refs, ['ref', ref]) should work
-        if (some(refs, matchesProperty('ref', ref))) {
+        if (refs.some(has('ref', ref))) {
             console.log(this.branch, 'already exists');
             return this.getInitialShas(this.branch);
         }
@@ -79,7 +79,7 @@ class GitHubHelper {
         // Create a new tree for your commit
         let body = JSON.stringify({
             base_tree: this.initialTreeSha,
-            tree: this.commits.map(c => merge({mode: '100644', type: 'blob'}, c))
+            tree: this.commits.map(c => Object.assign({mode: '100644', type: 'blob'}, c))
         });
         let r1 = await (await (this.post(this.github(`repos/${this.repo}/git/trees`), body))).json();
 
