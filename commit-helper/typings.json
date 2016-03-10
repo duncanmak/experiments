@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "lodash": "registry:npm/lodash#4.0.0+20160305082308",
+    "lodash": "registry:npm/lodash#4.0.0+20160305082308"
   },
   "ambientDependencies": {
     "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160226102134"

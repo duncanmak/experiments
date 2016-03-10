@@ -7,12 +7,10 @@ module.exports = {
         './src/app.ts'
     ],
     output: {
-        path: path.join(__dirname, 'dist'),
         filename: 'bundle.js'
     },
 
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin()
     ],
 
@@ -20,7 +18,6 @@ module.exports = {
     devtool: 'source-map',
 
     resolve: {
-        // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
     },
 
@@ -35,7 +32,8 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: 'babel',
                 query: {
-                    presets: ['es2015', 'react']
+                    presets: ['es2015'],
+                    plugins: ['transform-runtime']
                 }
             }]
     }
