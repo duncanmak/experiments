@@ -1,3 +1,5 @@
+import { isEqual } from 'lodash'
+
 interface Change { path: string; content: string }
 
 class GitHubHelper {
@@ -5,7 +7,7 @@ class GitHubHelper {
         public token: string,
         public repo: string,
         public branch: string = 'master',
-        public commits: Change[] = [],
+        public changes: Change[] = [],
         public initialCommitSha?: string,
         public initialTreeSha?: string
     ) {
@@ -22,7 +24,7 @@ class GitHubHelper {
     getReference = (ref)  => this.github(`repos/${this.repo}/git/refs/${ref}`);
 
     async ensureBranchExists() {
-        console.log('my branch', this.branch);
+        console.log('branch', this.branch);
 
         let url = this.github(`repos/${this.repo}/git/refs`);
         let ref = `refs/heads/${this.branch}`;
@@ -40,9 +42,10 @@ class GitHubHelper {
         let body = JSON.stringify({ref, sha: commitSha});
         console.log('body', body);
 
-        await this.post(url, body);
+        let r1 = await (await this.post(url, body)).json();
+        let r2 = await (await fetch(this.withToken(r1.object.url))).json();
 
-        return {commitSha, treeSha};
+        return {commitSha: r1.object.sha, treeSha: r2.tree.sha};
     }
 
     async getInitialShas(branch) {
@@ -58,24 +61,76 @@ class GitHubHelper {
     }
 
     change(c: Change) {
-        this.commits.push(c);
+        this.changes.push(c);
         return this;
     }
 
     async post(url, body: string, method = 'POST') {
-        const headers: any = {
+        const headers = this.headers({
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': `token ${this.token}`
-        };
+        });
         return fetch(url, {method, headers, body});
     }
 
+    headers(h) {
+        let headers = new Headers();
+        for (let k of Object.keys(h)) {
+            headers[k] = h[k];
+        }
+        return headers;
+    }
+
+    // TODO: Think about caching
+    async fetchContent(path: string) {
+        if (path === undefined) {
+            return;
+        } else {
+            console.log('fetching', path);
+
+            let url = this.github(`repos/${this.repo}/contents/${path}`) + `&ref=${this.branch}`;
+            let headers = this.headers({cache: 'no-cache', mode: 'cors'});
+            let result = await (await fetch(url, {method: 'GET', headers})).json();
+            let download_url = result.download_url + '?' + new Date().getTime(); // AKA MANUAL CACHE BUSTING
+            let content = await (await fetch(download_url)).text();
+
+            return {path, content};
+        }
+    }
+
+    public async showFiles() {
+        let promises = this.changes.map (c => this.fetchContent(c.path));
+        console.log(JSON.stringify(await Promise.all(promises)));
+    }
+
+    difference(from, to) {
+        return to.filter(i => {
+            for (let f of from) {
+                if (isEqual(f, i))
+                    return false;
+            }
+            return true;
+        })
+    };
+
     async commit(message) {
+        let changes = this.changes;
+        let current = await Promise.all(changes.map(c => this.fetchContent(c.path)));
+        let currentSet = new Set(current);
+        let difference = this.difference(current, changes); // ORDER MATTERS!
+
+        console.log('difference', JSON.stringify(difference));
+
+        if (difference.length === 0) {
+            console.log("Nothing new to commit");
+            return;
+        }
+
         // Create a new tree for your commit
         let body = JSON.stringify({
             base_tree: this.initialTreeSha,
-            tree: this.commits.map(c => Object.assign({mode: '100644', type: 'blob'}, c))
+            tree: this.changes.map(c => Object.assign({mode: '100644', type: 'blob'}, c))
         });
         let r1 = await (await (this.post(this.github(`repos/${this.repo}/git/trees`), body))).json();
 
@@ -84,6 +139,8 @@ class GitHubHelper {
         let parents = [this.initialCommitSha];
         let commit = JSON.stringify({ message, tree, parents });
         let r2 = await (await this.post(this.github(`repos/${this.repo}/git/commits`), commit)).json();
+
+        console.log('commit', JSON.stringify(r2));
 
         // Link commit to the reference
         body = JSON.stringify({sha: r2.sha});
@@ -97,14 +154,12 @@ async function test(token, repo) {
     const helper = new GitHubHelper(token, repo, 'test');
     await helper.setup()
 
-    console.log('object', helper.initialCommitSha, 'tree', helper.initialTreeSha);
-
     helper
-        .change({path: 'foo', content: 'This is foo 2'})
-        .change({path: 'bar', content: 'This is bar 2'});
+        .change({path: 'foo', content: 'This is foo 7'})
+        .change({path: 'bar', content: 'This is bar 7'});
 
     let result = await helper.commit('This is a message');
-    console.log(JSON.stringify(result));
-}
+    // console.log(JSON.stringify(result));
 
-// test('', '');
+    // helper.showFiles();
+}
