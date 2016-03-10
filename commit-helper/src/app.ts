@@ -30,10 +30,6 @@ class GitHubHelper {
 
         const has = (prop, value) => (obj) => obj[prop] === value;
 
-        // TODO: find(refs, ['ref', 'refs/heads/master']) should work
-        const master: any = refs.find(has('ref', 'refs/heads/master'));
-
-        // TODO: some(refs, ['ref', ref]) should work
         if (refs.some(has('ref', ref))) {
             console.log(this.branch, 'already exists');
             return this.getInitialShas(this.branch);
@@ -111,4 +107,4 @@ async function test(token, repo) {
     console.log(JSON.stringify(result));
 }
 
-test('', '');
+// test('', '');

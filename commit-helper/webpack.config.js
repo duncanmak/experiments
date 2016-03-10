@@ -12,11 +12,32 @@ module.exports = {
     },
 
     plugins: [
-        new webpack.NoErrorsPlugin()
+        new webpack.NoErrorsPlugin(),
+        new webpack.ProvidePlugin({
+            'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+        })
     ],
 
     debug: true,
     devtool: 'source-map',
+    devServer: {
+        port: 3000,
+        // It suppress error shown in console, so it has to be set to false.
+        quiet: false,
+        // It suppress everything except error, so it has to be set to false as well
+        // to see success build.
+        noInfo: false,
+        stats: {
+            // Config for minimal console.log mess.
+            assets: false,
+            colors: true,
+            version: true,
+            hash: false,
+            timings: true,
+            chunks: false,
+            chunkModules: false
+        }
+    },
 
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
@@ -31,11 +52,7 @@ module.exports = {
             }, {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel',
-                query: {
-                    presets: ['es2015'],
-                    plugins: ['transform-runtime']
-                }
+                loader: 'babel?cacheDirectory'
             }]
     }
     //   },
