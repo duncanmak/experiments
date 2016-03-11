@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     entry: [
         'babel-polyfill',
-        './src/app.ts'
+        './src/main.ts'
     ],
     output: {
         path: path.join(__dirname, 'dist'),
@@ -40,7 +40,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
+        extensions: ['', '.webpack.js', '.web.js', '.tsx', '.ts', '.js']
     },
 
     module: {

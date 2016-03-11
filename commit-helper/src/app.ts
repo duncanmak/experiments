@@ -1,22 +1,26 @@
-import { isEqual } from 'lodash'
+import { isEmpty, isEqual, isFunction, isUndefined } from 'lodash'
 
-interface Change { path: string; content: string }
+export interface Change { path: string; content: string }
 
-class GitHubHelper {
+export class GitHubHelper {
+
+    changes: Change[] = [];
+    initialCommitSha: string;
+    initialTreeSha: string;
+    onChangeAdded;
+
     constructor(
         public token: string,
         public repo: string,
-        public branch: string = 'master',
-        public changes: Change[] = [],
-        public initialCommitSha?: string,
-        public initialTreeSha?: string
+        public branch: string = 'master'
     ) {
     }
 
-    public async setup() {
+    public async setup(onChangeAdded?: Function) {
         let {commitSha, treeSha} = await this.ensureBranchExists();
         this.initialCommitSha = commitSha;
         this.initialTreeSha = treeSha;
+        this.onChangeAdded = onChangeAdded;
     }
 
     withToken    = (url)  => `${url}?access_token=${this.token}`;
@@ -62,6 +66,9 @@ class GitHubHelper {
 
     change(c: Change) {
         this.changes.push(c);
+        if (isFunction(this.onChangeAdded))
+            this.onChangeAdded(c);
+
         return this;
     }
 
@@ -82,16 +89,18 @@ class GitHubHelper {
         return headers;
     }
 
-    // TODO: Think about caching
     async fetchContent(path: string) {
-        if (path === undefined) {
+        if (isUndefined(path)) {
             return;
         } else {
             console.log('fetching', path);
 
             let url = this.github(`repos/${this.repo}/contents/${path}`) + `&ref=${this.branch}`;
-            let headers = this.headers({cache: 'no-cache', mode: 'cors'});
-            let result = await (await fetch(url, {method: 'GET', headers})).json();
+
+            // this doesn't work, see https://bugs.chromium.org/p/chromium/issues/detail?id=453190
+            // let headers = this.headers({cache: 'no-cache', mode: 'cors'});
+            let result = await (await fetch(url)).json();
+
             let download_url = result.download_url + '?' + new Date().getTime(); // AKA MANUAL CACHE BUSTING
             let content = await (await fetch(download_url)).text();
 
@@ -104,25 +113,23 @@ class GitHubHelper {
         console.log(JSON.stringify(await Promise.all(promises)));
     }
 
-    difference(from, to) {
-        return to.filter(i => {
-            for (let f of from) {
-                if (isEqual(f, i))
-                    return false;
+    async commit(message) {
+
+        // Compares two arrays of any, a, b, and returns new items in b.
+        const diff = (a, b) => b.filter(i => {
+            for (let item of a) {
+                if (isEqual(item, i)) return false;
             }
             return true;
-        })
-    };
+        });
 
-    async commit(message) {
         let changes = this.changes;
         let current = await Promise.all(changes.map(c => this.fetchContent(c.path)));
-        let currentSet = new Set(current);
-        let difference = this.difference(current, changes); // ORDER MATTERS!
+        let difference = diff(current, changes); // ORDER MATTERS!
 
         console.log('difference', JSON.stringify(difference));
 
-        if (difference.length === 0) {
+        if (isEmpty(difference)) {
             console.log("Nothing new to commit");
             return;
         }
@@ -150,16 +157,3 @@ class GitHubHelper {
     }
 }
 
-async function test(token, repo) {
-    const helper = new GitHubHelper(token, repo, 'test');
-    await helper.setup()
-
-    helper
-        .change({path: 'foo', content: 'This is foo 7'})
-        .change({path: 'bar', content: 'This is bar 7'});
-
-    let result = await helper.commit('This is a message');
-    // console.log(JSON.stringify(result));
-
-    // helper.showFiles();
-}
