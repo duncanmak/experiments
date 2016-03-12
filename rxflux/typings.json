@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160305082308"
+  },
+  "ambientDependencies": {
+    "react": "registry:dt/react#0.14.0+20160302224448",
+    "react-dom": "registry:dt/react-dom#0.0.0+20151118193745",
+    "rx": "registry:dt/rx#0.0.0+20150720134954",
+    "rx-lite": "registry:dt/rx-lite#0.0.0+20151011190054"
+  }
+}
