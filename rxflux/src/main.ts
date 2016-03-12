@@ -15,7 +15,7 @@ function view(entries) {
 function run(entries) {
     Actions
         .startWith(entries)
-        .scan((s, action) => action.update(s))
+        .scan((s, action) => action(s))
         .subscribe(view);
 }
 

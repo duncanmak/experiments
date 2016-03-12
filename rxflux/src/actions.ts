@@ -1,31 +1,25 @@
 import { Subject } from 'rx';
+import { partial } from 'lodash';
 
 export const Actions = new Subject<Action>();
 
 export const entryUpdated =
-    (idx, evt) => Actions.onNext(new UpdateEntry(idx, evt.target.value));
+    (idx, evt) => Actions.onNext(partial(updateEntry, idx, evt.target.value));
 
 export const entryRemoved =
-    (idx) => Actions.onNext(new RemoveEntry(idx))
+    (idx) => Actions.onNext(partial(removeEntry, idx));
 
-export interface Action { update<S>(state: S): S }
+export interface Action { <S>(state: S): S };
+// export type Action = <S>(state: S) => S;
 
-class UpdateEntry implements Action {
-    constructor(private index: number, private text: string) {
-    }
-    update(state: string[]) {
-        let newState = [...state];
-        newState.splice(this.index, 1, this.text);
-        return newState;
-    }
-}
+function updateEntry(idx: number, text: string, state: string[]) {
+    let newState = [...state];
+    newState.splice(idx, 1, text);
+    return newState;
+};
 
-class RemoveEntry implements Action {
-    constructor(private index: number) {
-    }
-    update(state: string[]) {
-        let newState = [...state];
-        newState.splice(this.index, 1);
-        return newState;
-    }
-}
+function removeEntry(idx: number, state: string[]) {
+    let newState = [...state];
+    newState.splice(idx, 1);
+    return newState;
+};
