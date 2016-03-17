@@ -1,6 +1,6 @@
-import { isArray, isEmpty, isEqual, isFunction, isUndefined } from 'lodash'
+import { isEmpty, isEqual, isFunction, isUndefined } from 'lodash';
+import { messageUpdated } from './actions';
 
-export type ChangeAddedHandler = (c: Change) => void;
 export interface Change { path: string; content: string }
 
 export class GitHubHelper {
@@ -8,7 +8,6 @@ export class GitHubHelper {
     changes: Change[] = [];
     initialCommitSha: string;
     initialTreeSha: string;
-    onChangeAdded;
 
     constructor(
         public token: string,
@@ -17,11 +16,10 @@ export class GitHubHelper {
     ) {
     }
 
-    public async setup(onChangeAdded?: ChangeAddedHandler) {
+    public async setup() {
         let {commitSha, treeSha} = await this.ensureBranchExists();
         this.initialCommitSha = commitSha;
         this.initialTreeSha = treeSha;
-        this.onChangeAdded = onChangeAdded;
     }
 
     withToken    = (url)  => `${url}?access_token=${this.token}`;
@@ -65,10 +63,16 @@ export class GitHubHelper {
         return {commitSha, treeSha};
     }
 
-    change(c: Change) {
-        this.changes.push(c);
-        if (isFunction(this.onChangeAdded))
-            this.onChangeAdded(c);
+    async change(c: Change) {
+        let current = await this.fetchContent(c.path);
+
+        if (await current.content === c.content) {
+            messageUpdated(`Nothing changed in ${c.path}`);
+        } else {
+            this.changes.push(c);
+            messageUpdated(`${this.changes.length} files added`);
+
+        }
 
         return this;
     }
@@ -90,6 +94,13 @@ export class GitHubHelper {
         return headers;
     }
 
+    async download(url): Promise<string> {
+        let addr = url + '?' + new Date().getTime();
+        console.log('fetching', addr);
+        // AKA MANUAL CACHE BUSTING
+        return await (await fetch(addr)).text();
+    }
+
     async fetchContent(path: string) {
         if (isUndefined(path)) {
             return;
@@ -101,47 +112,18 @@ export class GitHubHelper {
             // this doesn't work, see https://bugs.chromium.org/p/chromium/issues/detail?id=453190
             // let headers = this.headers({cache: 'no-cache', mode: 'cors'});
             let result = await (await fetch(url)).json();
-
-            let download_url = result.download_url + '?' + new Date().getTime(); // AKA MANUAL CACHE BUSTING
-            let content = await (await fetch(download_url)).text();
+            let content = this.download(result.download_url);
 
             return {path, content};
         }
     }
 
-    public async listFiles(path?: string) {
+    public async listFiles(): Promise<any[]> {
             let url = this.github(`repos/${this.repo}/contents`) + `&ref=${this.branch}`;
-            let result = await (await fetch(url)).json();
-
-            if (isArray(result)) {
-                return result;
-            } else {
-                let download_url = result.download_url + '?' + new Date().getTime(); // AKA MANUAL CACHE BUSTING
-                return await (await fetch(download_url)).text();
-            }
+            return await (await fetch(url)).json();
     }
 
     async commit(message) {
-
-        // Compares two arrays of any, a, b, and returns new items in b.
-        const diff = (a, b) => b.filter(i => {
-            for (let item of a) {
-                if (isEqual(item, i)) return false;
-            }
-            return true;
-        });
-
-        let changes = this.changes;
-        let current = await Promise.all(changes.map(c => this.fetchContent(c.path)));
-        let difference = diff(current, changes); // ORDER MATTERS!
-
-        console.log('difference', JSON.stringify(difference));
-
-        if (isEmpty(difference)) {
-            console.log("Nothing new to commit");
-            return;
-        }
-
         // Create a new tree for your commit
         let body = JSON.stringify({
             base_tree: this.initialTreeSha,

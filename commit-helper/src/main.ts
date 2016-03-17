@@ -7,14 +7,33 @@ import { App } from './views';
 
 const content = document.getElementById('content');
 
-console.log('Starting');
+async function view (state) {
+    let s = await state;
+    console.log('view', s);
+    render(createElement(App, s), content)
+}
 
 function run() {
+    console.log('Starting');
+
     Observable.combineLatest(
         States.startWith(InitialState),
         Actions.startWith(undefined),
-        async (state, action) => action && action(await state)
-    ).subscribe(async (state) => render(createElement(App, await state), content));
+        async (state, action) => {
+            console.log('State', JSON.stringify(state));
+            if (action) {
+                console.log('Action', action.name);
+                let result = await action(await state);
+                Actions.onNext(undefined);
+                States.onNext(result);
+                return result;
+            } else {
+                return state;
+            }
+        }
+    )
+    .distinctUntilChanged()
+    .subscribe(view);
 }
 
 window.onload = run;
