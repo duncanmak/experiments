@@ -21,6 +21,7 @@
     "lodash": "^4.6.1",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
+    "rx": "^4.1.0",
     "whatwg-fetch": "^0.11.0"
   },
   "devDependencies": {
