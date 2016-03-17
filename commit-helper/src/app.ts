@@ -1,5 +1,6 @@
-import { isEmpty, isEqual, isFunction, isUndefined } from 'lodash'
+import { isArray, isEmpty, isEqual, isFunction, isUndefined } from 'lodash'
 
+export type ChangeAddedHandler = (c: Change) => void;
 export interface Change { path: string; content: string }
 
 export class GitHubHelper {
@@ -16,7 +17,7 @@ export class GitHubHelper {
     ) {
     }
 
-    public async setup(onChangeAdded?: Function) {
+    public async setup(onChangeAdded?: ChangeAddedHandler) {
         let {commitSha, treeSha} = await this.ensureBranchExists();
         this.initialCommitSha = commitSha;
         this.initialTreeSha = treeSha;
@@ -108,9 +109,16 @@ export class GitHubHelper {
         }
     }
 
-    public async showFiles() {
-        let promises = this.changes.map (c => this.fetchContent(c.path));
-        console.log(JSON.stringify(await Promise.all(promises)));
+    public async listFiles(path?: string) {
+            let url = this.github(`repos/${this.repo}/contents`) + `&ref=${this.branch}`;
+            let result = await (await fetch(url)).json();
+
+            if (isArray(result)) {
+                return result;
+            } else {
+                let download_url = result.download_url + '?' + new Date().getTime(); // AKA MANUAL CACHE BUSTING
+                return await (await fetch(download_url)).text();
+            }
     }
 
     async commit(message) {
