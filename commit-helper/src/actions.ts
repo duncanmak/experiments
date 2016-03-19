@@ -8,15 +8,14 @@ export interface Action { (state: State): S };
 export const Actions = new Subject<Action | S>();
 
 export function githubInitialized(text: string) {
-    let [token, repo] = text.split(' ');
-    console.log(token, repo);
-    Actions.onNext(initializeGithub(repo, token));
+    let [token, repo, branch] = text.split(' ');
+    Actions.onNext(initializeGithub(repo, token, branch));
 };
 
 const initializeGithub = curry(
-    async (repo: string, token: string, state: State) => {
+    async (repo: string, token: string, branch: string, state: State) => {
         let github = state.github || new GitHubHelper();
-        await github.setup(token, repo);
+        await github.setup(token, repo, branch);
         let message = "Logged in";
         return Object.assign({}, state, { github, message });
     }
@@ -74,3 +73,17 @@ const updateMessage = curry(
         return Object.assign({}, state, { message });
     }
 );
+
+export function xmlValidated(path: string, text: string) {
+    Actions.onNext(validateXml(path, text));
+}
+
+const validateXml = curry(
+    (path: string, text: string, state: State) => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(text, "text/xml");
+        let error = dom.documentElement.nodeName == "parsererror";
+        let message = `${path} is ${error ? "invalid" : "valid"}`;
+        return Object.assign(state, { message })
+    }
+)

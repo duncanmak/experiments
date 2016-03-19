@@ -2,7 +2,7 @@ import { Component } from 'react';
 import * as React from 'react';
 
 import { Change, GitHubHelper } from './github-helper';
-import { changesAdded, changesCommitted, filesListed, githubInitialized, messageUpdated } from './actions';
+import { changesAdded, changesCommitted, filesListed, githubInitialized, messageUpdated, xmlValidated } from './actions';
 import { State } from './state';
 
 export class ChangeView extends Component<Change, any> {
@@ -24,6 +24,10 @@ export class ChangeView extends Component<Change, any> {
                         onClick={evt => changesAdded(path, this.input.value)}
                         disabled={!this.state.changed || this.input.value === content}>
                         Add Change!
+                    </button>
+                    <button
+                        onClick={evt => xmlValidated(path, this.input.value)}>
+                        Validate!
                     </button>
                </p>);
     }
