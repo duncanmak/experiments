@@ -3,38 +3,35 @@ import { curry } from 'lodash';
 import { Change, GitHubHelper } from './github-helper';
 import { State } from './state';
 
-export interface Action { (state: State): State|Promise<State> };
-export const Actions = new Subject<Action>();
+type S = State | Promise<State>
+export interface Action { (state: State): S };
+export const Actions = new Subject<Action | S>();
 
-export function githubInitialized (text: string) {
+export function githubInitialized(text: string) {
     let [token, repo] = text.split(' ');
     console.log(token, repo);
     Actions.onNext(initializeGithub(repo, token));
 };
 
-function initializeGithub(repo: string, token: string) {
-    return async function initializeGithub(state: State) {
-        let helper = state.helper || new GitHubHelper(token, repo);
-        await helper.setup();
+const initializeGithub = curry(
+    async (repo: string, token: string, state: State) => {
+        let github = state.github || new GitHubHelper();
+        await github.setup(token, repo);
         let message = "Logged in";
-        return Object.assign({}, state, {repo, token, helper, message});
-    };
-}
+        return Object.assign({}, state, { github, message });
+    }
+);
 
-export function filesListed () { Actions.onNext(listFiles); }
+export function filesListed() { Actions.onNext(listFiles); }
 
 async function listFiles(state: State) {
-    console.log('state', state);
-    const helper = state.helper;
-    let entries = await helper.listFiles();
-    let files = await Promise.all(await entries.map(async (e) => {
-        let path: string = e.path;
-        let content = await helper.download(e.download_url);
-        return <[string, string]>[path, content];
-    }));
-
-    console.log('files', JSON.stringify(files));
-    return Object.assign({}, state, { files: new Map(files) });
+    let {github} = state;
+    let entries = await github.listFiles();
+    let files = new Map<string, string>();
+    for (let e of entries) {
+        files.set(e.path, await github.download(e.download_url));
+    }
+    return Object.assign({}, state, { files });
 }
 
 export function changesAdded(path: string, content: string) {
@@ -49,35 +46,31 @@ const addChanges = curry(
         let changes = new Map(state.changes);
         changes.set(path, content);
 
-        return Object.assign({}, state, {changes});
-    });
+        return Object.assign({}, state, { changes });
+    }
+);
 
 export function changesCommitted(msg: string) {
     Actions.onNext(commitChanges(msg));
 }
 
 const commitChanges = curry(
-    async (msg: string, s: State) => {
-        let {helper, changes} = s;
-        for (let c of changes) {
-            helper.change({ path: c[0], content: c[1] });
-        }
-        await helper.commit(msg);
-        return s;
+    async (message: string, state: State) => {
+        let {github} = state;
+        let makeChange = (c:[string, string]) => ({ path: c[0], content: c[1] });
+        let changes = Array.from(state.changes).map(makeChange);
+        await github.commit(changes, message);
+        return state;
     }
 );
 
-export function messageUpdated(msg: string) {
-    Actions.onNext(updateMessage(msg));
+export function messageUpdated(message: string) {
+    Actions.onNext(updateMessage(message));
 }
 
-// const updateMessage = curry(
-//     (message: string, state: State) => Object.assign({}, state, {message})
-// );
-
-function updateMessage(message: string) {
-    return function updateMessage(state: State) {
+const updateMessage = curry(
+    async (message: string, state: State) => {
         console.log('new message', message);
-        return Object.assign({}, state, {message});
+        return Object.assign({}, state, { message });
     }
-}
+);

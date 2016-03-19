@@ -5,18 +5,17 @@ export interface Change { path: string; content: string }
 
 export class GitHubHelper {
 
-    changes: Change[] = [];
+    public token: string;
+    public repo: string;
+    public branch: string = 'master'
     initialCommitSha: string;
     initialTreeSha: string;
 
-    constructor(
-        public token: string,
-        public repo: string,
-        public branch: string = 'master'
-    ) {
-    }
+    public async setup(token: string, repo: string, branch: string = 'master') {
+        this.token = token;
+        this.repo = repo;
+        this.branch = branch;
 
-    public async setup() {
         let {commitSha, treeSha} = await this.ensureBranchExists();
         this.initialCommitSha = commitSha;
         this.initialTreeSha = treeSha;
@@ -63,20 +62,6 @@ export class GitHubHelper {
         return {commitSha, treeSha};
     }
 
-    async change(c: Change) {
-        let current = await this.fetchContent(c.path);
-
-        if (await current.content === c.content) {
-            messageUpdated(`Nothing changed in ${c.path}`);
-        } else {
-            this.changes.push(c);
-            messageUpdated(`${this.changes.length} files added`);
-
-        }
-
-        return this;
-    }
-
     async post(url, body: string, method = 'POST') {
         const headers = this.headers({
             'Accept': 'application/json',
@@ -113,21 +98,20 @@ export class GitHubHelper {
             // let headers = this.headers({cache: 'no-cache', mode: 'cors'});
             let result = await (await fetch(url)).json();
             let content = this.download(result.download_url);
-
             return {path, content};
         }
     }
 
-    public async listFiles(): Promise<any[]> {
-            let url = this.github(`repos/${this.repo}/contents`) + `&ref=${this.branch}`;
-            return await (await fetch(url)).json();
+    public async listFiles() {
+        let url = this.github(`repos/${this.repo}/contents`) + `&ref=${this.branch}`;
+        return await (await fetch(url)).json();
     }
 
-    async commit(message) {
+    async commit(changes: Change[], message: string) {
         // Create a new tree for your commit
         let body = JSON.stringify({
             base_tree: this.initialTreeSha,
-            tree: this.changes.map(c => Object.assign({mode: '100644', type: 'blob'}, c))
+            tree: changes.map(c => Object.assign({mode: '100644', type: 'blob'}, c))
         });
         let r1 = await (await (this.post(this.github(`repos/${this.repo}/git/trees`), body))).json();
 
