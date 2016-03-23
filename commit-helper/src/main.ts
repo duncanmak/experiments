@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import { render } from 'react-dom';
 import { createElement } from 'react';
 import { Observable, Subject } from 'rx';

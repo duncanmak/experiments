@@ -2,10 +2,16 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    entry: [
-        'babel-polyfill',
-        './src/main.ts'
-    ],
+    entry: {
+        main: './src/main.ts',
+        vendor: [
+            'babel-polyfill',
+            'lodash',
+            'react',
+            'react-dom',
+            'rx'
+        ]
+    },
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'bundle.js'
@@ -15,6 +21,9 @@ module.exports = {
         new webpack.NoErrorsPlugin(),
         new webpack.ProvidePlugin({
             'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor', filename: 'vendor.js'
         })
     ],
 
