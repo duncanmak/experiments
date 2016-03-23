@@ -14,10 +14,10 @@ export async function initialAction(state: State) {
 
 export function githubInitialized(text: string) {
     let [token, repo, branch] = text.split(' ');
-    Actions.onNext(initializeGithub(repo, token, branch));
+    Actions.onNext(initializeGitHub(repo, token, branch));
 };
 
-const initializeGithub = curry(
+const initializeGitHub = curry(
     async (repo: string, token: string, branch: string, state: State) => {
         let github = state.github || new GitHubHelper();
         await github.setup(token, repo, branch);
