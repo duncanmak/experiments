@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import { render } from 'react-dom';
 import { createElement } from 'react';
 import { Observable, Subject } from 'rx';
-import { Action, Actions } from './actions';
+import { Action, Actions, initialAction } from './actions';
 import { InitialState, State } from './state';
 import { App } from './views';
 
@@ -18,6 +18,8 @@ function run() {
         .startWith(InitialState)
         .scan((s: Promise<State>, action: Action) => Promise.resolve(s).then(action))
         .subscribe(view);
+
+    Actions.onNext(initialAction);
 }
 
 window.onload = run;

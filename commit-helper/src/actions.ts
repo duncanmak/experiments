@@ -7,6 +7,11 @@ type S = State | Promise<State>
 export interface Action { (state: State): S };
 export const Actions = new Subject<Action | S>();
 
+export async function initialAction(state: State) {
+    console.log("First!");
+    return state;
+}
+
 export function githubInitialized(text: string) {
     let [token, repo, branch] = text.split(' ');
     Actions.onNext(initializeGithub(repo, token, branch));
