@@ -48,6 +48,7 @@ export class App extends Component<State, {}> {
         let {changes, files, github, message} = this.props;
         return (
             <div>
+                <h1>GitHub Commit Helper</h1>
                 <input size='100' ref={r => this.input = r } />
                 <button onClick={evt => githubInitialized(this.input.value)}>Login</button>
                 <hr />

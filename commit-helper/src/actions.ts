@@ -17,7 +17,8 @@ const initializeGithub = curry(
         let github = state.github || new GitHubHelper();
         await github.setup(token, repo, branch);
         let message = "Logged in";
-        return Object.assign({}, state, { github, message });
+        let files = new Map(), changes = new Map();
+        return { changes, files, github, message };
     }
 );
 
