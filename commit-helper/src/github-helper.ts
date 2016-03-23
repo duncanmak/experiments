@@ -5,16 +5,19 @@ export interface Change { path: string; content: string }
 
 export class GitHubHelper {
 
-    public token: string;
-    public repo: string;
-    public branch: string = 'master'
     initialCommitSha: string;
     initialTreeSha: string;
 
-    public async setup(token: string, repo: string, branch: string = 'master') {
+    constructor(
+        public token?: string,
+        public repo?: string,
+        public branch?: string
+    ) { }
+
+    public async setup(token?: string, repo?: string, branch?: string) {
         this.token = token;
         this.repo = repo;
-        this.branch = branch;
+        this.branch = branch || 'master';
 
         let {commitSha, treeSha} = await this.ensureBranchExists();
         this.initialCommitSha = commitSha;
