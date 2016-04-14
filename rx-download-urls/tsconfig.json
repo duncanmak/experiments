@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "es2015",
+        "target": "es2015",
+        "noImplicitAny": false,
+        "rootDir": "src",
+        "sourceMap": true,
+        "jsx": "react",
+        "outDir": "dist"
+    },
+    "exclude": [
+        "node_modules",
+        "typings/main.d.ts",
+        "typings/main"
+    ]
+}
