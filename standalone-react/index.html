@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>Fake Wrench</title>
+    <script src="https://fb.me/react-15.0.2.min.js"></script>
+    <script src="https://fb.me/react-dom-15.0.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.min.js"></script>
+</head>
+
+<body>
+    This is the body.
+
+    <div id="content">
+        <script src="listing.js"></script>
+        <script>
+            var content = document.getElementById("content");
+            ReactDOM.render(React.createElement(Listing, {data: _.shuffle(['Matt', 'Joe', 'Duncan'])}), content);
+        </script>
+    </div>
+</body>
+</html>
